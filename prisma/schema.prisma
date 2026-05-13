@@ -1,0 +1,171 @@
+// prisma/schema.prisma
+
+generator client {
+  provider   = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ─── ENUMS ───────────────────────────────────────────────
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MECHANIC
+}
+
+enum ServiceStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIAL
+  PAID
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  QRIS
+}
+
+// ─── MODELS ──────────────────────────────────────────────
+
+model Workshop {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String?
+  address   String?
+  city      String?
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  customers Customer[]
+  vehicles  Vehicle[]
+  services  Service[]
+  invoices  Invoice[]
+  payments  Payment[]
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  role       UserRole @default(MECHANIC)
+  workshopId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  workshop   Workshop  @relation(fields: [workshopId], references: [id])
+  services   Service[]
+}
+
+model Customer {
+  id         String   @id @default(uuid())
+  name       String
+  phone      String?
+  email      String?
+  address    String?
+  workshopId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  workshop   Workshop  @relation(fields: [workshopId], references: [id])
+  vehicles   Vehicle[]
+}
+
+model Vehicle {
+  id           String   @id @default(uuid())
+  plateNumber  String
+  brand        String
+  model        String
+  year         Int?
+  color        String?
+  engineCC     Int?
+  workshopId   String
+  customerId   String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workshop     Workshop  @relation(fields: [workshopId], references: [id])
+  customer     Customer  @relation(fields: [customerId], references: [id])
+  services     Service[]
+}
+
+model Service {
+  id          String        @id @default(uuid())
+  serviceNo   String        @unique  // e.g. SVC-20240101-001
+  complaint   String
+  diagnosis   String?
+  notes       String?
+  status      ServiceStatus @default(PENDING)
+  workshopId  String
+  vehicleId   String
+  mechanicId  String?
+  startDate   DateTime      @default(now())
+  endDate     DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  workshop     Workshop      @relation(fields: [workshopId], references: [id])
+  vehicle      Vehicle       @relation(fields: [vehicleId], references: [id])
+  mechanic     User?         @relation(fields: [mechanicId], references: [id])
+  serviceItems ServiceItem[]
+  invoice      Invoice?
+}
+
+model ServiceItem {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  qty         Int     @default(1)
+  unitPrice   Decimal @db.Decimal(12, 2)
+  total       Decimal @db.Decimal(12, 2)
+  serviceId   String
+  createdAt   DateTime @default(now())
+
+  service     Service @relation(fields: [serviceId], references: [id])
+}
+
+model Invoice {
+  id          String        @id @default(uuid())
+  invoiceNo   String        @unique  // e.g. INV-20240101-001
+  subtotal    Decimal       @db.Decimal(12, 2)
+  tax         Decimal       @default(0) @db.Decimal(12, 2)
+  discount    Decimal       @default(0) @db.Decimal(12, 2)
+  total       Decimal       @db.Decimal(12, 2)
+  status      InvoiceStatus @default(UNPAID)
+  dueDate     DateTime?
+  workshopId  String
+  serviceId   String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  workshop    Workshop  @relation(fields: [workshopId], references: [id])
+  service     Service   @relation(fields: [serviceId], references: [id])
+  payments    Payment[]
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  amount        Decimal       @db.Decimal(12, 2)
+  method        PaymentMethod @default(CASH)
+  referenceNo   String?
+  notes         String?
+  workshopId    String
+  invoiceId     String
+  paidAt        DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+
+  workshop      Workshop  @relation(fields: [workshopId], references: [id])
+  invoice       Invoice   @relation(fields: [invoiceId], references: [id])
+}

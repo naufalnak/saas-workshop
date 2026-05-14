@@ -1,13 +1,14 @@
 // src/app/(dashboard)/invoices/page.tsx
 import Header from "@/components/layout/header";
+import { getInvoices } from "./actions";
+import { InvoicesClient } from "./create/_components/invoices-client";
 
-export default function InvoicesPage() {
+export default async function InvoicesPage() {
+  const invoices = await getInvoices();
   return (
     <>
       <Header title="Invoice" subtitle="Kelola invoice dan pembayaran" />
-      <div className="flex-1 p-6">
-        <p className="text-gray-400 text-sm">Coming soon — Week 4</p>
-      </div>
+      <InvoicesClient initialInvoices={invoices} />
     </>
   );
 }

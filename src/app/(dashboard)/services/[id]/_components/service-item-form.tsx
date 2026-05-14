@@ -3,7 +3,7 @@
 
 import { useTransition, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { addServiceItem } from "../actions";
+import { addServiceItem } from "../../actions";
 import { formatCurrency } from "@/lib/utils";
 
 interface Props {

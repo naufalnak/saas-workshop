@@ -6,7 +6,7 @@ import {
   getVehiclesForSelect,
   getMechanicsForSelect,
 } from "../actions";
-import { ServiceDetailClient } from "../_components/service-detail-client";
+import { ServiceDetailClient } from "./_components/service-detail-client";
 
 interface Props {
   params: Promise<{ id: string }>;

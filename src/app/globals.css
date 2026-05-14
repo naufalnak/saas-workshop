@@ -30,3 +30,20 @@ textarea::placeholder {
   color: #9ca3af;
   opacity: 1;
 }
+
+/* Print styles — tambahkan di bagian paling bawah globals.css */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #invoice-print,
+  #invoice-print * {
+    visibility: visible;
+  }
+  #invoice-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

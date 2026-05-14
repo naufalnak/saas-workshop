@@ -15,16 +15,16 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
-import { ServiceForm } from "./service-form";
+import { ServiceForm } from "../../_components/service-form";
 import { ServiceItemForm } from "./service-item-form";
-import { updateServiceStatus, deleteServiceItem } from "../actions";
+import { updateServiceStatus, deleteServiceItem } from "../../actions";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { ServiceStatus } from "@prisma/client";
 import type {
   getServiceById,
   getVehiclesForSelect,
   getMechanicsForSelect,
-} from "../actions";
+} from "../../actions";
 
 type ServiceDetail = NonNullable<Awaited<ReturnType<typeof getServiceById>>>;
 type VehicleOption = Awaited<ReturnType<typeof getVehiclesForSelect>>[number];

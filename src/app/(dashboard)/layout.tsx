@@ -1,7 +1,15 @@
+// src/app/(dashboard)/layout.tsx
+import Sidebar from "@/components/layout/sidebar";
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="min-h-screen bg-gray-50">{children}</div>;
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+      <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+    </div>
+  );
 }

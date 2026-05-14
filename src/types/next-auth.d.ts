@@ -1,5 +1,4 @@
 // src/types/next-auth.d.ts
-
 import { UserRole } from "@prisma/client";
 import { DefaultSession } from "next-auth";
 

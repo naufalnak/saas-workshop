@@ -10,6 +10,20 @@ datasource db {
 
 // ─── ENUMS ───────────────────────────────────────────────
 
+enum OrderType {
+  BOOKING
+  WALK_IN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
 enum BookingStatus {
   PENDING
   APPROVED
@@ -58,28 +72,84 @@ model BookingRequest {
   workshop  Workshop  @relation(fields: [workshopId], references: [id])
   customer  Customer  @relation(fields: [customerId], references: [id])
   vehicle   Vehicle?  @relation(fields: [vehicleId], references: [id])
-  service   Service?
+  service   Service?                                                       // ← no fields/references here
 }
 
 model Workshop {
-  id        String   @id @default(uuid())
-  name      String
-  phone     String?
-  address   String?
-  city      String?
-  logoUrl   String?
-  slug      String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  name        String
+  phone       String?
+  address     String?
+  city        String?
+  logoUrl     String?
+  slug        String?  @unique
+  // ↓ TAMBAH field baru ini
+  description String?
+  openHour    String?
+  closeHour   String?
+  isPublished Boolean  @default(false)
+  specialties String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   users            User[]
+  bookingRequests  BookingRequest[]
   customers        Customer[]
   vehicles         Vehicle[]
   services         Service[]
   invoices         Invoice[]
   payments         Payment[]
   customerAccounts CustomerAccount[]
-  bookingRequests BookingRequest[]
+  workshopServices WorkshopService[]  // ← TAMBAH
+  orders           Order[]            // ← TAMBAH
+}
+
+model WorkshopService {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  priceMin    Int?
+  priceMax    Int?
+  duration    Int?
+  workshopId  String
+  createdAt   DateTime @default(now())
+
+  workshop    Workshop @relation(fields: [workshopId], references: [id])
+}
+
+model GlobalCustomer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+}
+
+model Order {
+  id               String      @id @default(uuid())
+  orderNo          String      @unique
+  type             OrderType
+  status           OrderStatus @default(PENDING)
+  complaint        String
+  notes            String?
+  preferredDate    DateTime?
+  guestName        String?
+  guestPhone       String?
+  workshopId       String
+  globalCustomerId String?
+  vehicleId        String?
+  serviceId        String?     @unique
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  workshop        Workshop        @relation(fields: [workshopId], references: [id])
+  globalCustomer  GlobalCustomer? @relation(fields: [globalCustomerId], references: [id])
+  vehicle         Vehicle?        @relation(fields: [vehicleId], references: [id])
+  service         Service?        @relation(fields: [serviceId], references: [id])
 }
 
 model User {
@@ -128,46 +198,48 @@ model CustomerAccount {
 }
 
 model Vehicle {
-  id           String   @id @default(uuid())
-  plateNumber  String
-  brand        String
-  model        String
-  year         Int?
-  color        String?
-  engineCC     Int?
-  workshopId   String
-  customerId   String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(uuid())
+  plateNumber String
+  brand       String
+  model       String
+  year        Int?
+  color       String?
+  engineCC    Int?
+  workshopId  String
+  customerId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  workshop     Workshop  @relation(fields: [workshopId], references: [id])
-  customer     Customer  @relation(fields: [customerId], references: [id])
-  services     Service[]
+  workshop    Workshop  @relation(fields: [workshopId], references: [id])
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  services    Service[]
   bookingRequests BookingRequest[]
+  orders      Order[]   // ← TAMBAH
 }
 
 model Service {
-  id              String        @id @default(uuid())
-  serviceNo       String        @unique
-  complaint       String
-  diagnosis       String?
-  notes           String?
-  status          ServiceStatus @default(PENDING)
-  workshopId      String
-  vehicleId       String
-  mechanicId      String?
-  bookingRequestId String?      @unique  // ← TAMBAH INI
-  startDate       DateTime      @default(now())
-  endDate         DateTime?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id               String        @id @default(uuid())
+  serviceNo        String        @unique
+  complaint        String
+  diagnosis        String?
+  notes            String?
+  status           ServiceStatus @default(PENDING)
+  workshopId       String
+  vehicleId        String
+  mechanicId       String?
+  bookingRequestId String?       @unique                                   // ← FK added
+  startDate        DateTime      @default(now())
+  endDate          DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
-  workshop       Workshop      @relation(fields: [workshopId], references: [id])
-  vehicle        Vehicle       @relation(fields: [vehicleId], references: [id])
-  mechanic       User?         @relation(fields: [mechanicId], references: [id])
+  workshop       Workshop       @relation(fields: [workshopId], references: [id])
+  vehicle        Vehicle        @relation(fields: [vehicleId], references: [id])
+  mechanic       User?          @relation(fields: [mechanicId], references: [id])
   serviceItems   ServiceItem[]
   invoice        Invoice?
-  bookingRequest BookingRequest? @relation(fields: [bookingRequestId], references: [id])  // ← TAMBAH INI
+  bookingRequest BookingRequest? @relation(fields: [bookingRequestId], references: [id])  // ← fields/references here
+  order          Order?
 }
 
 model ServiceItem {

@@ -1,35 +1,47 @@
 // src/middleware.ts
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
+export async function middleware(req: NextRequest) {
+  const path = req.nextUrl.pathname;
 
-export default auth((req) => {
-  const { nextUrl } = req;
-  const isLoggedIn = !!req.auth?.user;
+  // Route operator dashboard
+  const isOperatorRoute =
+    path.startsWith("/dashboard") ||
+    path.startsWith("/customers") ||
+    path.startsWith("/vehicles") ||
+    path.startsWith("/services") ||
+    path.startsWith("/invoices") ||
+    path.startsWith("/bookings") ||
+    path.startsWith("/settings");
 
-  const isAuthPage =
-    nextUrl.pathname.startsWith("/login") ||
-    nextUrl.pathname.startsWith("/register");
+  // Route auth operator
+  const isOperatorAuthRoute =
+    path.startsWith("/login") || path.startsWith("/register");
 
-  const isDashboard =
-    nextUrl.pathname.startsWith("/dashboard") ||
-    nextUrl.pathname.startsWith("/customers") ||
-    nextUrl.pathname.startsWith("/vehicles") ||
-    nextUrl.pathname.startsWith("/services") ||
-    nextUrl.pathname.startsWith("/invoices");
+  // Cek operator session via JWT (edge-compatible)
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  const isOperatorLoggedIn = !!token;
 
-  if (isDashboard && !isLoggedIn) {
+  // Proteksi operator dashboard
+  if (isOperatorRoute && !isOperatorLoggedIn) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  if (isAuthPage && isLoggedIn) {
+  // Redirect operator yang sudah login dari auth page
+  if (isOperatorAuthRoute && isOperatorLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
+  // Customer routes (/akun) — handle di page level via server component
+  // Tidak perlu cek di middleware karena pakai cookie httpOnly biasa
+
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
-  runtime: "nodejs",
 };

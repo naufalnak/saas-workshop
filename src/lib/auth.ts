@@ -59,3 +59,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 });
+
+export { auth as default } from "./auth";

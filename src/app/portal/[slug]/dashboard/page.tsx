@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { getWorkshopBySlug, getMyServices } from "../actions";
+import { getMyBookings } from "../booking/actions"; // ← TAMBAH IMPORT
 import { CustomerDashboardClient } from "./_components/customer-dashboard-client";
 import { notFound } from "next/navigation";
 
@@ -21,14 +22,19 @@ export default async function CustomerDashboardPage({ params }: Props) {
     redirect(`/portal/${slug}/login`);
   }
 
-  const services = await getMyServices();
+  const [services, bookings] = await Promise.all([
+    // ← fetch keduanya sekaligus
+    getMyServices(),
+    getMyBookings(),
+  ]);
 
   return (
     <CustomerDashboardClient
       session={session}
       workshop={workshop}
-      services={services}
-      slug={slug}
+      services={services ?? []}
+      bookings={bookings ?? []}
+      slug={slug} // ← TAMBAH INI
     />
   );
 }

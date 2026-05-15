@@ -25,12 +25,10 @@ export function formatDate(date: Date | string): string {
 
 // Generate service number: SVC-20240101-001
 export function generateServiceNo(): string {
-  const date = new Date();
-  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
-  const rand = Math.floor(Math.random() * 1000)
-    .toString()
-    .padStart(3, "0");
-  return `SVC-${dateStr}-${rand}`;
+  const d = new Date();
+  const date = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+  const rand = Math.floor(Math.random() * 9000 + 1000);
+  return `SVC-${date}-${rand}`;
 }
 
 // Generate invoice number: INV-20240101-001

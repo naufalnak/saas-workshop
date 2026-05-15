@@ -10,6 +10,12 @@ datasource db {
 
 // ─── ENUMS ───────────────────────────────────────────────
 
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum UserRole {
   OWNER
   ADMIN
@@ -37,6 +43,24 @@ enum PaymentMethod {
 
 // ─── MODELS ──────────────────────────────────────────────
 
+model BookingRequest {
+  id            String        @id @default(uuid())
+  complaint     String
+  preferredDate DateTime?
+  status        BookingStatus @default(PENDING)
+  workshopId    String
+  customerId    String
+  vehicleId     String?
+  notes         String?
+  rejectReason  String?
+  createdAt     DateTime      @default(now())
+
+  workshop  Workshop  @relation(fields: [workshopId], references: [id])
+  customer  Customer  @relation(fields: [customerId], references: [id])
+  vehicle   Vehicle?  @relation(fields: [vehicleId], references: [id])
+  service   Service?
+}
+
 model Workshop {
   id        String   @id @default(uuid())
   name      String
@@ -55,6 +79,7 @@ model Workshop {
   invoices         Invoice[]
   payments         Payment[]
   customerAccounts CustomerAccount[]
+  bookingRequests BookingRequest[]
 }
 
 model User {
@@ -84,6 +109,7 @@ model Customer {
   workshop        Workshop         @relation(fields: [workshopId], references: [id])
   vehicles        Vehicle[]
   customerAccount CustomerAccount? // ← TAMBAH INI
+  bookingRequests BookingRequest[]
 }
 
 model CustomerAccount {
@@ -117,28 +143,31 @@ model Vehicle {
   workshop     Workshop  @relation(fields: [workshopId], references: [id])
   customer     Customer  @relation(fields: [customerId], references: [id])
   services     Service[]
+  bookingRequests BookingRequest[]
 }
 
 model Service {
-  id          String        @id @default(uuid())
-  serviceNo   String        @unique  // e.g. SVC-20240101-001
-  complaint   String
-  diagnosis   String?
-  notes       String?
-  status      ServiceStatus @default(PENDING)
-  workshopId  String
-  vehicleId   String
-  mechanicId  String?
-  startDate   DateTime      @default(now())
-  endDate     DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id              String        @id @default(uuid())
+  serviceNo       String        @unique
+  complaint       String
+  diagnosis       String?
+  notes           String?
+  status          ServiceStatus @default(PENDING)
+  workshopId      String
+  vehicleId       String
+  mechanicId      String?
+  bookingRequestId String?      @unique  // ← TAMBAH INI
+  startDate       DateTime      @default(now())
+  endDate         DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  workshop     Workshop      @relation(fields: [workshopId], references: [id])
-  vehicle      Vehicle       @relation(fields: [vehicleId], references: [id])
-  mechanic     User?         @relation(fields: [mechanicId], references: [id])
-  serviceItems ServiceItem[]
-  invoice      Invoice?
+  workshop       Workshop      @relation(fields: [workshopId], references: [id])
+  vehicle        Vehicle       @relation(fields: [vehicleId], references: [id])
+  mechanic       User?         @relation(fields: [mechanicId], references: [id])
+  serviceItems   ServiceItem[]
+  invoice        Invoice?
+  bookingRequest BookingRequest? @relation(fields: [bookingRequestId], references: [id])  // ← TAMBAH INI
 }
 
 model ServiceItem {

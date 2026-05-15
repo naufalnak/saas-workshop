@@ -13,6 +13,8 @@ import {
   CheckCircle2,
   AlertCircle,
   ChevronRight,
+  Plus,
+  CalendarDays,
 } from "lucide-react";
 import { customerLogout } from "../../actions";
 import { formatDate, formatCurrency } from "@/lib/utils";
@@ -23,6 +25,9 @@ import type { getWorkshopBySlug } from "../../actions";
 
 type Services = Awaited<ReturnType<typeof getMyServices>>;
 type Workshop = NonNullable<Awaited<ReturnType<typeof getWorkshopBySlug>>>;
+type BookingWithRelations = Awaited<
+  ReturnType<typeof import("../../booking/actions").getMyBookings>
+>[number];
 
 const STATUS_CONFIG: Record<
   ServiceStatus,
@@ -54,6 +59,7 @@ interface Props {
   session: CustomerSession;
   workshop: Workshop;
   services: Services;
+  bookings: BookingWithRelations[]; // ← TAMBAH
   slug: string;
 }
 
@@ -61,6 +67,7 @@ export function CustomerDashboardClient({
   session,
   workshop,
   services,
+  bookings,
   slug,
 }: Props) {
   const [isPending, startTransition] = useTransition();
@@ -157,7 +164,7 @@ export function CustomerDashboardClient({
         </div>
 
         {/* Nav tabs */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Link
             href={`/portal/${slug}/dashboard`}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition ${
@@ -176,7 +183,66 @@ export function CustomerDashboardClient({
             }`}>
             <FileText className="w-3.5 h-3.5" /> Invoice
           </Link>
+          <Link
+            href={`/portal/${slug}/booking`}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-green-600 hover:bg-green-700 text-white transition">
+            <Plus className="w-3.5 h-3.5" /> Booking Servis
+          </Link>
         </div>
+
+        {/* Booking status */}
+        {bookings.length > 0 && (
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold text-gray-700">
+              Status Booking
+            </h2>
+            {bookings.slice(0, 3).map((b) => (
+              <div
+                key={b.id}
+                className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CalendarDays className="w-3.5 h-3.5 text-gray-400" />
+                      <span className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                        {b.complaint}
+                      </span>
+                    </div>
+                    {b.preferredDate && (
+                      <p className="text-xs text-gray-400 ml-5">
+                        Preferensi: {formatDate(b.preferredDate)}
+                      </p>
+                    )}
+                    {b.status === "REJECTED" && b.rejectReason && (
+                      <p className="text-xs text-red-500 ml-5 mt-1">
+                        Ditolak: {b.rejectReason}
+                      </p>
+                    )}
+                    {b.status === "APPROVED" && b.service && (
+                      <p className="text-xs text-green-600 ml-5 mt-1">
+                        ✓ Service order dibuat — {b.service.serviceNo}
+                      </p>
+                    )}
+                  </div>
+                  <span
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0 ${
+                      b.status === "PENDING"
+                        ? "bg-amber-100 text-amber-700"
+                        : b.status === "APPROVED"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                    }`}>
+                    {b.status === "PENDING"
+                      ? "Menunggu"
+                      : b.status === "APPROVED"
+                        ? "Disetujui"
+                        : "Ditolak"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Service list */}
         {services.length === 0 ? (

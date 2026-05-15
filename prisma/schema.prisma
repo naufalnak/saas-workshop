@@ -44,15 +44,17 @@ model Workshop {
   address   String?
   city      String?
   logoUrl   String?
+  slug      String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     User[]
-  customers Customer[]
-  vehicles  Vehicle[]
-  services  Service[]
-  invoices  Invoice[]
-  payments  Payment[]
+  users            User[]
+  customers        Customer[]
+  vehicles         Vehicle[]
+  services         Service[]
+  invoices         Invoice[]
+  payments         Payment[]
+  customerAccounts CustomerAccount[]
 }
 
 model User {
@@ -79,8 +81,24 @@ model Customer {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  workshop   Workshop  @relation(fields: [workshopId], references: [id])
-  vehicles   Vehicle[]
+  workshop        Workshop         @relation(fields: [workshopId], references: [id])
+  vehicles        Vehicle[]
+  customerAccount CustomerAccount? // ← TAMBAH INI
+}
+
+model CustomerAccount {
+  id         String   @id @default(uuid())
+  email      String
+  password   String
+  workshopId String
+  customerId String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  workshop   Workshop @relation(fields: [workshopId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  @@unique([email, workshopId])
 }
 
 model Vehicle {

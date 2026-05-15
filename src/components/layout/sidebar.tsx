@@ -9,6 +9,7 @@ import {
   Car,
   Wrench,
   FileText,
+  Settings,
   LogOut,
   ChevronRight,
 } from "lucide-react";
@@ -21,6 +22,7 @@ const navItems = [
   { href: "/vehicles", label: "Kendaraan", icon: Car },
   { href: "/services", label: "Servis", icon: Wrench },
   { href: "/invoices", label: "Invoice", icon: FileText },
+  { href: "/settings", label: "Pengaturan", icon: Settings }, // ← TAMBAH
 ];
 
 export default function Sidebar() {

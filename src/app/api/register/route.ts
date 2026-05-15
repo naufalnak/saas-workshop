@@ -1,5 +1,4 @@
 // src/app/api/register/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
@@ -14,18 +13,34 @@ const schema = z.object({
   city: z.string().optional(),
 });
 
+// "Bengkel Maju Jaya" → "bengkel-maju-jaya"
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+async function uniqueSlug(base: string): Promise<string> {
+  let slug = base;
+  let i = 1;
+  while (await prisma.workshop.findUnique({ where: { slug } })) {
+    slug = `${base}-${i++}`;
+  }
+  return slug;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const parsed = schema.safeParse(body);
-
     if (!parsed.success) {
       return NextResponse.json({ error: "Data tidak valid" }, { status: 400 });
     }
 
     const { workshopName, name, email, password, phone, city } = parsed.data;
 
-    // Cek email sudah terdaftar
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
@@ -35,13 +50,12 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
+    const slug = await uniqueSlug(generateSlug(workshopName));
 
-    // Buat workshop + user owner dalam 1 transaksi
     const result = await prisma.$transaction(async (tx) => {
       const workshop = await tx.workshop.create({
-        data: { name: workshopName, phone, city },
+        data: { name: workshopName, phone, city, slug },
       });
-
       const user = await tx.user.create({
         data: {
           name,
@@ -51,7 +65,6 @@ export async function POST(req: NextRequest) {
           workshopId: workshop.id,
         },
       });
-
       return { workshop, user };
     });
 

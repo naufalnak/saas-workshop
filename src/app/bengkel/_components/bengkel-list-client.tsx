@@ -102,14 +102,28 @@ export function BengkelListClient({ initialWorkshops }: Props) {
           ))}
         </div>
       ) : workshops.length === 0 ? (
-        <div className="text-center py-16">
-          <Wrench className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-base font-semibold text-gray-600 mb-1">
-            Bengkel tidak ditemukan
+        <div className="text-center py-20">
+          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Wrench className="w-8 h-8 text-gray-300" />
+          </div>
+          <h3 className="text-base font-semibold text-gray-600 mb-2">
+            {search || activeSpecialty !== "Semua"
+              ? "Bengkel tidak ditemukan"
+              : "Belum ada bengkel terdaftar"}
           </h3>
-          <p className="text-sm text-gray-400">
-            Coba kata kunci lain atau filter berbeda
+          <p className="text-sm text-gray-400 max-w-xs mx-auto mb-6">
+            {search || activeSpecialty !== "Semua"
+              ? "Coba kata kunci lain atau hapus filter"
+              : "Jadilah bengkel pertama yang bergabung di platform ini!"}
           </p>
+          {!search && activeSpecialty === "Semua" && (
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-blue-700 transition">
+              <Wrench className="w-4 h-4" />
+              Daftarkan Bengkel Saya
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

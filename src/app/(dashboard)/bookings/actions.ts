@@ -4,69 +4,98 @@
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
 import { revalidatePath } from "next/cache";
-import { BookingStatus } from "@prisma/client";
+import { OrderStatus, OrderType } from "@prisma/client";
 import { generateServiceNo } from "@/lib/utils";
 
-export async function getBookings(status?: BookingStatus | "ALL") {
+export async function getOrders(
+  status?: OrderStatus | "ALL",
+  type?: OrderType | "ALL",
+) {
   const workshopId = await getWorkshopId();
-  return prisma.bookingRequest.findMany({
+  return prisma.order.findMany({
     where: {
       workshopId,
       ...(status && status !== "ALL" ? { status } : {}),
+      ...(type && type !== "ALL" ? { type } : {}),
     },
     include: {
-      customer: true,
+      globalCustomer: {
+        select: { id: true, name: true, email: true, phone: true },
+      },
       vehicle: true,
-      service: { select: { id: true, serviceNo: true } },
+      service: { select: { id: true, serviceNo: true, status: true } },
     },
     orderBy: { createdAt: "desc" },
   });
 }
 
-export async function approveBooking(bookingId: string, mechanicId?: string) {
+export async function confirmOrder(orderId: string) {
   const workshopId = await getWorkshopId();
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, workshopId },
+  });
+  if (!order) throw new Error("Order tidak ditemukan");
 
-  const booking = await prisma.bookingRequest.findFirst({
-    where: { id: bookingId, workshopId },
-    include: { customer: true, vehicle: true },
+  // Cari customer di workshop ini
+  let customer = await prisma.customer.findFirst({
+    where: { workshopId, name: order.guestName ?? undefined },
   });
 
-  if (!booking) throw new Error("Booking tidak ditemukan");
-  if (booking.status !== "PENDING") throw new Error("Booking sudah diproses");
+  if (!customer && order.globalCustomerId) {
+    const gc = await prisma.globalCustomer.findUnique({
+      where: { id: order.globalCustomerId },
+    });
+    customer = await prisma.customer.findFirst({
+      where: { workshopId, email: gc?.email },
+    });
+    if (!customer && gc) {
+      customer = await prisma.customer.create({
+        data: {
+          name: gc.name,
+          email: gc.email,
+          phone: gc.phone ?? null,
+          workshopId,
+        },
+      });
+    }
+  }
 
-  // Kalau customer belum punya kendaraan, buat vehicle placeholder
-  let vehicleId = booking.vehicleId;
+  if (!customer) throw new Error("Customer tidak ditemukan");
+
+  // Handle vehicle
+  let vehicleId = order.vehicleId;
   if (!vehicleId) {
     const placeholder = await prisma.vehicle.create({
       data: {
         plateNumber: "UNKNOWN",
         brand: "Belum diketahui",
         model: "Belum diketahui",
-        customerId: booking.customerId,
+        customerId: customer.id,
         workshopId,
       },
     });
     vehicleId = placeholder.id;
   }
 
-  // Buat service order otomatis
+  // Buat service order
   const service = await prisma.service.create({
     data: {
       serviceNo: generateServiceNo(),
-      complaint: booking.complaint,
-      notes: booking.notes,
+      complaint: order.complaint,
+      notes: order.notes,
       status: "PENDING",
       vehicleId,
       workshopId,
-      mechanicId: mechanicId || null,
-      bookingRequestId: bookingId, // ← link langsung saat create
     },
   });
 
-  // Update booking status + link ke service
-  await prisma.bookingRequest.update({
-    where: { id: bookingId },
-    data: { status: "APPROVED" }, // ← hapus serviceId
+  // Update order
+  await prisma.order.update({
+    where: { id: orderId },
+    data: {
+      status: "CONFIRMED",
+      serviceId: service.id,
+    },
   });
 
   revalidatePath("/bookings");
@@ -74,13 +103,20 @@ export async function approveBooking(bookingId: string, mechanicId?: string) {
   return service.id;
 }
 
-export async function rejectBooking(bookingId: string, reason: string) {
+export async function rejectOrder(orderId: string, reason: string) {
   const workshopId = await getWorkshopId();
-
-  await prisma.bookingRequest.update({
-    where: { id: bookingId, workshopId },
-    data: { status: "REJECTED", rejectReason: reason },
+  await prisma.order.update({
+    where: { id: orderId, workshopId },
+    data: { status: "REJECTED" },
   });
+  revalidatePath("/bookings");
+}
 
+export async function markOrderInProgress(orderId: string) {
+  const workshopId = await getWorkshopId();
+  await prisma.order.update({
+    where: { id: orderId, workshopId },
+    data: { status: "IN_PROGRESS" },
+  });
   revalidatePath("/bookings");
 }

@@ -5,220 +5,270 @@ import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   CalendarDays,
+  Zap,
   CheckCircle2,
   XCircle,
   Clock,
   Loader2,
+  ChevronRight,
+  Car,
+  User,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Modal } from "@/components/ui/modal";
-import { getBookings, approveBooking, rejectBooking } from "../actions";
+import { getOrders, confirmOrder, rejectOrder } from "../actions";
 import { formatDate } from "@/lib/utils";
-import { BookingStatus } from "@prisma/client";
+import { OrderStatus, OrderType } from "@prisma/client";
 
-type BookingWithRelations = Awaited<ReturnType<typeof getBookings>>[number];
+type OrderWithRelations = Awaited<ReturnType<typeof getOrders>>[number];
 
-const STATUS_TABS: { label: string; value: BookingStatus | "ALL" }[] = [
+const TYPE_TABS: { label: string; value: OrderType | "ALL" }[] = [
   { label: "Semua", value: "ALL" },
-  { label: "Menunggu", value: "PENDING" },
-  { label: "Disetujui", value: "APPROVED" },
-  { label: "Ditolak", value: "REJECTED" },
+  { label: "Booking", value: "BOOKING" },
+  { label: "Walk-in", value: "WALK_IN" },
 ];
 
-const STATUS_CONFIG: Record<
-  BookingStatus,
-  { label: string; className: string }
-> = {
-  PENDING: { label: "Menunggu", className: "bg-amber-100 text-amber-700" },
-  APPROVED: { label: "Disetujui", className: "bg-green-100 text-green-700" },
-  REJECTED: { label: "Ditolak", className: "bg-red-100 text-red-700" },
-};
+const STATUS_TABS: { label: string; value: OrderStatus | "ALL" }[] = [
+  { label: "Menunggu", value: "PENDING" },
+  { label: "Dikonfirmasi", value: "CONFIRMED" },
+  { label: "Selesai", value: "DONE" },
+  { label: "Semua", value: "ALL" },
+];
+
+const STATUS_CONFIG: Record<OrderStatus, { label: string; className: string }> =
+  {
+    PENDING: { label: "Menunggu", className: "bg-amber-100 text-amber-700" },
+    CONFIRMED: {
+      label: "Dikonfirmasi",
+      className: "bg-blue-100 text-blue-700",
+    },
+    REJECTED: { label: "Ditolak", className: "bg-red-100 text-red-700" },
+    IN_PROGRESS: { label: "Diproses", className: "bg-blue-100 text-blue-700" },
+    DONE: { label: "Selesai", className: "bg-green-100 text-green-700" },
+    CANCELLED: { label: "Dibatal", className: "bg-gray-100 text-gray-600" },
+  };
 
 interface Props {
-  initialBookings: BookingWithRelations[];
+  initialOrders: OrderWithRelations[];
 }
 
-export function BookingsClient({ initialBookings }: Props) {
+export function BookingsClient({ initialOrders }: Props) {
   const router = useRouter();
-  const [bookings, setBookings] = useState(initialBookings);
-  const [activeTab, setActiveTab] = useState<BookingStatus | "ALL">("ALL");
+  const [orders, setOrders] = useState(initialOrders);
+  const [activeStatus, setActiveStatus] = useState<OrderStatus | "ALL">(
+    "PENDING",
+  );
+  const [activeType, setActiveType] = useState<OrderType | "ALL">("ALL");
   const [isPending, startTransition] = useTransition();
   const [rejectTarget, setRejectTarget] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
-  const load = (status?: BookingStatus | "ALL") => {
+  const load = () => {
     startTransition(async () => {
-      const data = await getBookings(status);
-      setBookings(data);
+      const data = await getOrders(activeStatus, activeType);
+      setOrders(data);
     });
   };
 
   useEffect(() => {
-    load(activeTab);
-  }, [activeTab]);
+    load();
+  }, [activeStatus, activeType]);
 
-  const handleApprove = (id: string) => {
-    if (!confirm("Setujui booking ini? Service order akan dibuat otomatis."))
+  const handleConfirm = (id: string) => {
+    if (!confirm("Konfirmasi order ini? Service order akan dibuat otomatis."))
       return;
     startTransition(async () => {
-      const serviceId = await approveBooking(id);
+      const serviceId = await confirmOrder(id);
       router.push(`/services/${serviceId}`);
     });
   };
 
   const handleReject = () => {
-    if (!rejectTarget || !rejectReason.trim()) return;
+    if (!rejectTarget) return;
     startTransition(async () => {
-      await rejectBooking(rejectTarget, rejectReason);
+      await rejectOrder(rejectTarget, rejectReason);
       setRejectTarget(null);
       setRejectReason("");
-      load(activeTab);
+      load();
     });
   };
 
-  const pendingCount = initialBookings.filter(
-    (b) => b.status === "PENDING",
+  const pendingCount = initialOrders.filter(
+    (o) => o.status === "PENDING",
   ).length;
 
   return (
     <div className="flex-1 p-6 space-y-5">
-      {/* Pending alert */}
+      {/* Alert pending */}
       {pendingCount > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
           <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
           <p className="text-sm text-amber-800">
-            Ada <strong>{pendingCount} booking</strong> yang menunggu konfirmasi
-            Anda.
+            <strong>{pendingCount} order</strong> menunggu konfirmasi kamu.
           </p>
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-fit">
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setActiveTab(tab.value)}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-              activeTab === tab.value
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}>
-            {tab.label}
-            {tab.value === "PENDING" && pendingCount > 0 && (
-              <span className="ml-1.5 bg-amber-500 text-white text-xs rounded-full px-1.5 py-0.5">
-                {pendingCount}
-              </span>
-            )}
-          </button>
-        ))}
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3">
+        {/* Status tabs */}
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
+          {STATUS_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveStatus(tab.value)}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                activeStatus === tab.value
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}>
+              {tab.label}
+              {tab.value === "PENDING" && pendingCount > 0 && (
+                <span className="ml-1.5 bg-amber-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                  {pendingCount}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Type filter */}
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
+          {TYPE_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveType(tab.value)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                activeType === tab.value
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}>
+              {tab.value === "BOOKING" && (
+                <CalendarDays className="w-3.5 h-3.5" />
+              )}
+              {tab.value === "WALK_IN" && <Zap className="w-3.5 h-3.5" />}
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <p className="text-sm text-gray-500">
-        {isPending ? "Memuat..." : `${bookings.length} booking ditemukan`}
+        {isPending ? "Memuat..." : `${orders.length} order ditemukan`}
       </p>
 
-      {bookings.length === 0 && !isPending ? (
+      {orders.length === 0 && !isPending ? (
         <EmptyState
           icon={CalendarDays}
-          title="Belum ada booking"
-          description="Booking dari pelanggan akan muncul di sini."
+          title="Tidak ada order"
+          description="Order dari pelanggan akan muncul di sini."
         />
       ) : (
         <div className="space-y-3">
-          {bookings.map((b) => {
-            const statusCfg = STATUS_CONFIG[b.status];
+          {orders.map((order) => {
+            const statusCfg = STATUS_CONFIG[order.status];
             return (
               <div
-                key={b.id}
+                key={order.id}
                 className="bg-white rounded-xl border border-gray-200 p-5">
                 <div className="flex items-start justify-between gap-4">
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-gray-900">
-                        {b.customer.name}
-                      </span>
+                    {/* Header */}
+                    <div className="flex items-center gap-2 flex-wrap mb-2">
+                      <div
+                        className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${
+                          order.type === "BOOKING"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-green-100 text-green-700"
+                        }`}>
+                        {order.type === "BOOKING" ? (
+                          <CalendarDays className="w-3 h-3" />
+                        ) : (
+                          <Zap className="w-3 h-3" />
+                        )}
+                        {order.type === "BOOKING" ? "Booking" : "Walk-in"}
+                      </div>
                       <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusCfg.className}`}>
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusCfg.className}`}>
                         {statusCfg.label}
                       </span>
+                      <span className="text-xs font-mono text-gray-400">
+                        {order.orderNo}
+                      </span>
                     </div>
 
-                    {b.customer.phone && (
-                      <p className="text-xs text-gray-400 mb-2">
-                        {b.customer.phone}
-                      </p>
-                    )}
-
-                    {/* Kendaraan */}
-                    {b.vehicle && (
-                      <div className="text-sm text-gray-600 mb-2">
-                        🚗 {b.vehicle.plateNumber} — {b.vehicle.brand}{" "}
-                        {b.vehicle.model}
+                    {/* Customer */}
+                    {order.globalCustomer && (
+                      <div className="flex items-center gap-1.5 text-sm text-gray-900 mb-1">
+                        <User className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="font-medium">
+                          {order.globalCustomer.name}
+                        </span>
+                        {order.globalCustomer.phone && (
+                          <span className="text-gray-400 text-xs">
+                            · {order.globalCustomer.phone}
+                          </span>
+                        )}
                       </div>
                     )}
 
-                    {/* Keluhan */}
+                    {/* Vehicle */}
+                    {order.vehicle && (
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                        <Car className="w-3.5 h-3.5" />
+                        {order.vehicle.plateNumber} — {order.vehicle.brand}{" "}
+                        {order.vehicle.model}
+                      </div>
+                    )}
+
+                    {/* Complaint */}
                     <div className="bg-gray-50 rounded-lg p-3 mb-2">
                       <p className="text-xs text-gray-500 mb-0.5">Keluhan</p>
-                      <p className="text-sm text-gray-800">{b.complaint}</p>
+                      <p className="text-sm text-gray-800">{order.complaint}</p>
                     </div>
 
-                    {/* Tanggal preferensi */}
-                    {b.preferredDate && (
+                    {/* Preferred date */}
+                    {order.preferredDate && (
                       <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
                         <CalendarDays className="w-3.5 h-3.5" />
-                        Preferensi: {formatDate(b.preferredDate)}
+                        Preferensi: {formatDate(order.preferredDate)}
                       </div>
                     )}
 
-                    {/* Notes */}
-                    {b.notes && (
-                      <p className="text-xs text-gray-400 italic">{b.notes}</p>
-                    )}
+                    {/* Tanggal order */}
+                    <p className="text-xs text-gray-400">
+                      Dikirim {formatDate(order.createdAt)}
+                    </p>
 
-                    {/* Reject reason */}
-                    {b.status === "REJECTED" && b.rejectReason && (
-                      <div className="mt-2 bg-red-50 rounded-lg px-3 py-2">
-                        <p className="text-xs text-red-600">
-                          Alasan penolakan: {b.rejectReason}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Link ke service kalau approved */}
-                    {b.status === "APPROVED" && b.service && (
+                    {/* Link service kalau sudah diproses */}
+                    {order.service && (
                       <button
                         onClick={() =>
-                          router.push(`/services/${b.service!.id}`)
+                          router.push(`/services/${order.service!.id}`)
                         }
-                        className="mt-2 text-xs text-blue-600 hover:underline">
-                        Lihat Service Order: {b.service.serviceNo} →
+                        className="mt-2 text-xs text-blue-600 hover:underline flex items-center gap-1">
+                        Lihat Service {order.service.serviceNo}
+                        <ChevronRight className="w-3 h-3" />
                       </button>
                     )}
-
-                    <p className="text-xs text-gray-400 mt-2">
-                      Dikirim {formatDate(b.createdAt)}
-                    </p>
                   </div>
 
                   {/* Actions */}
-                  {b.status === "PENDING" && (
+                  {order.status === "PENDING" && (
                     <div className="flex flex-col gap-2 flex-shrink-0">
                       <button
-                        onClick={() => handleApprove(b.id)}
+                        onClick={() => handleConfirm(order.id)}
                         disabled={isPending}
                         className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition disabled:opacity-70">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Setujui
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Konfirmasi
                       </button>
                       <button
                         onClick={() => {
-                          setRejectTarget(b.id);
+                          setRejectTarget(order.id);
                           setRejectReason("");
                         }}
                         disabled={isPending}
-                        className="flex items-center gap-1.5 border border-red-300 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg text-xs font-medium transition disabled:opacity-70">
+                        className="flex items-center gap-1.5 border border-red-300 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg text-xs font-medium transition">
                         <XCircle className="w-3.5 h-3.5" /> Tolak
                       </button>
                     </div>
@@ -234,18 +284,18 @@ export function BookingsClient({ initialBookings }: Props) {
       <Modal
         open={!!rejectTarget}
         onClose={() => setRejectTarget(null)}
-        title="Tolak Booking"
+        title="Tolak Order"
         size="sm">
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            Berikan alasan penolakan agar pelanggan mengerti.
+            Berikan alasan penolakan untuk pelanggan.
           </p>
           <textarea
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
             rows={3}
-            placeholder="Contoh: Jadwal penuh, silakan booking ulang minggu depan"
-            className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition resize-none"
+            placeholder="Contoh: Jadwal penuh minggu ini, silakan booking minggu depan"
+            className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-400 transition resize-none"
           />
           <div className="flex gap-2">
             <button
@@ -262,7 +312,7 @@ export function BookingsClient({ initialBookings }: Props) {
               ) : (
                 <XCircle className="w-3.5 h-3.5" />
               )}
-              Tolak Booking
+              Tolak
             </button>
           </div>
         </div>

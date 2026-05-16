@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   workshopName: z.string().min(3),
@@ -13,7 +14,6 @@ const schema = z.object({
   city: z.string().optional(),
 });
 
-// "Bengkel Maju Jaya" → "bengkel-maju-jaya"
 function generateSlug(name: string): string {
   return name
     .toLowerCase()
@@ -33,6 +33,17 @@ async function uniqueSlug(base: string): Promise<string> {
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit check
+    const ip = req.headers.get("x-forwarded-for") ?? "anonymous";
+    const { success } = await checkRateLimit(ip, "register");
+
+    if (!success) {
+      return NextResponse.json(
+        { error: "Terlalu banyak percobaan. Coba lagi dalam 10 menit." },
+        { status: 429 },
+      );
+    }
+
     const body = await req.json();
     const parsed = schema.safeParse(body);
     if (!parsed.success) {

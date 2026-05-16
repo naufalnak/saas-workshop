@@ -6,14 +6,9 @@ import { getGlobalCustomerSession } from "@/lib/global-customer-auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { OrderType } from "@prisma/client";
+import { generateOrderNo } from "@/lib/utils";
 
-function generateOrderNo(): string {
-  const d = new Date();
-  const date = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  const rand = Math.floor(Math.random() * 9000 + 1000);
-  return `ORD-${date}-${rand}`;
-}
-
+// ── schemas ───────────────────────────────────────────────
 const orderSchema = z.object({
   complaint: z.string().min(5, "Keluhan minimal 5 karakter"),
   notes: z.string().optional(),

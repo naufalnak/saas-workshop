@@ -57,6 +57,16 @@ enum PaymentMethod {
 
 // ─── MODELS ──────────────────────────────────────────────
 
+model RateLimit {
+  id        String   @id @default(cuid())
+  ip        String
+  endpoint  String
+  attempts  Int      @default(1)
+  resetAt   DateTime
+
+  @@unique([ip, endpoint])
+  @@map("rate_limits")
+}
 model BookingRequest {
   id            String        @id @default(uuid())
   complaint     String

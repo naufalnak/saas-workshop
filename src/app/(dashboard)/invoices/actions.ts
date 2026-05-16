@@ -6,15 +6,9 @@ import { getWorkshopId } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { InvoiceStatus } from "@prisma/client";
+import { generateInvoiceNo } from "@/lib/utils";
 
 // ── helpers ───────────────────────────────────────────────
-
-function generateInvoiceNo(): string {
-  const d = new Date();
-  const date = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  const rand = Math.floor(Math.random() * 9000 + 1000);
-  return `INV-${date}-${rand}`;
-}
 
 async function recalculateInvoiceStatus(invoiceId: string) {
   const invoice = await prisma.invoice.findUnique({

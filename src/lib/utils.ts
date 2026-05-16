@@ -2,6 +2,7 @@
 
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { nanoid } from "nanoid";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -27,16 +28,18 @@ export function formatDate(date: Date | string): string {
 export function generateServiceNo(): string {
   const d = new Date();
   const date = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  const rand = Math.floor(Math.random() * 9000 + 1000);
-  return `SVC-${date}-${rand}`;
+  return `SVC-${date}-${nanoid(6).toUpperCase()}`;
 }
 
 // Generate invoice number: INV-20240101-001
 export function generateInvoiceNo(): string {
-  const date = new Date();
-  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
-  const rand = Math.floor(Math.random() * 1000)
-    .toString()
-    .padStart(3, "0");
-  return `INV-${dateStr}-${rand}`;
+  const d = new Date();
+  const date = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+  return `INV-${date}-${nanoid(6).toUpperCase()}`;
+}
+
+export function generateOrderNo(): string {
+  const d = new Date();
+  const date = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+  return `ORD-${date}-${nanoid(6).toUpperCase()}`;
 }

@@ -2,9 +2,9 @@
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 
-const SECRET = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET ?? "fallback-secret",
-);
+const secret = process.env.NEXTAUTH_SECRET;
+if (!secret) throw new Error("NEXTAUTH_SECRET is not set");
+const SECRET = new TextEncoder().encode(secret);
 
 export interface GlobalCustomerSession {
   id: string;

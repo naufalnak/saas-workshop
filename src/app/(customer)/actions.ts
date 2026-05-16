@@ -9,6 +9,8 @@ import {
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { headers } from "next/headers";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -23,6 +25,15 @@ const loginSchema = z.object({
 });
 
 export async function registerCustomer(formData: FormData) {
+  // Rate limit check
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for") ?? "anonymous";
+  const { success } = await checkRateLimit(ip, "customer-register");
+
+  if (!success) {
+    return { error: "Terlalu banyak percobaan. Coba lagi dalam 10 menit." };
+  }
+
   const parsed = registerSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -58,6 +69,15 @@ export async function registerCustomer(formData: FormData) {
 }
 
 export async function loginCustomer(formData: FormData) {
+  // Rate limit check
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for") ?? "anonymous";
+  const { success } = await checkRateLimit(ip, "customer-login");
+
+  if (!success) {
+    return { error: "Terlalu banyak percobaan. Coba lagi dalam 10 menit." };
+  }
+
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),

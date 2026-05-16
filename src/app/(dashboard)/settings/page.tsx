@@ -1,19 +1,16 @@
 // src/app/(dashboard)/settings/page.tsx
 import Header from "@/components/layout/header";
-import { getWorkshopId } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { getWorkshopProfile } from "./actions";
 import { SettingsClient } from "./_components/settings-client";
 
 export default async function SettingsPage() {
-  const workshopId = await getWorkshopId();
-  const workshop = await prisma.workshop.findUnique({
-    where: { id: workshopId },
-  });
+  const workshop = await getWorkshopProfile();
+  if (!workshop) return null;
 
   return (
     <>
       <Header title="Pengaturan" subtitle="Kelola profil bengkel" />
-      <SettingsClient workshop={workshop!} />
+      <SettingsClient workshop={workshop} />
     </>
   );
 }

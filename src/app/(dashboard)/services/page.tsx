@@ -8,7 +8,7 @@ import {
 import { ServicesClient } from "./_components/services-client";
 
 export default async function ServicesPage() {
-  const [services, vehicles, mechanics] = await Promise.all([
+  const [{ data: services }, vehicles, mechanics] = await Promise.all([
     getServices(),
     getVehiclesForSelect(),
     getMechanicsForSelect(),

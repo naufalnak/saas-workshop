@@ -15,7 +15,9 @@ import { getInvoices } from "../../actions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { InvoiceStatus } from "@prisma/client";
 
-type InvoiceWithRelations = Awaited<ReturnType<typeof getInvoices>>[number];
+type InvoiceWithRelations = Awaited<
+  ReturnType<typeof getInvoices>
+>["data"][number];
 
 const STATUS_TABS: {
   label: string;
@@ -49,8 +51,8 @@ export function InvoicesClient({ initialInvoices }: Props) {
 
   useEffect(() => {
     startTransition(async () => {
-      const data = await getInvoices(activeTab);
-      setInvoices(data);
+      const result = await getInvoices(activeTab);
+      setInvoices(result.data);
     });
   }, [activeTab]);
 

@@ -4,7 +4,7 @@ import { getVehicles, getCustomersForSelect } from "./actions";
 import { VehiclesClient } from "./_components/vehicles-client";
 
 export default async function VehiclesPage() {
-  const [vehicles, customers] = await Promise.all([
+  const [{ data: vehicles }, customers] = await Promise.all([
     getVehicles(),
     getCustomersForSelect(),
   ]);

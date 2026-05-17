@@ -9,7 +9,9 @@ import { CustomerForm } from "./customer-form";
 import { CustomerList } from "./customer-list";
 import { getCustomers } from "../actions";
 
-type CustomerWithCount = Awaited<ReturnType<typeof getCustomers>>[number];
+type CustomerWithCount = Awaited<
+  ReturnType<typeof getCustomers>
+>["data"][number];
 
 interface Props {
   initialCustomers: CustomerWithCount[];
@@ -23,8 +25,8 @@ export function CustomersClient({ initialCustomers }: Props) {
 
   const load = (q?: string) => {
     startTransition(async () => {
-      const data = await getCustomers(q);
-      setCustomers(data);
+      const result = await getCustomers(q);
+      setCustomers(result.data);
     });
   };
 

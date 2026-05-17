@@ -9,7 +9,9 @@ import { VehicleForm } from "./vehicle-form";
 import { VehicleList } from "./vehicle-list";
 import { getVehicles, getCustomersForSelect } from "../actions";
 
-type VehicleWithCustomer = Awaited<ReturnType<typeof getVehicles>>[number];
+type VehicleWithCustomer = Awaited<
+  ReturnType<typeof getVehicles>
+>["data"][number];
 type CustomerOption = Awaited<ReturnType<typeof getCustomersForSelect>>[number];
 
 interface Props {
@@ -30,7 +32,7 @@ export function VehiclesClient({ initialVehicles, initialCustomers }: Props) {
         getVehicles(q),
         getCustomersForSelect(),
       ]);
-      setVehicles(v);
+      setVehicles(v.data); // ← tambah .data
       setCustomers(c);
     });
   };

@@ -11,9 +11,19 @@ import {
   ChevronRight,
   Star,
 } from "lucide-react";
-import { getPublishedWorkshops } from "../actions";
 
-type Workshop = Awaited<ReturnType<typeof getPublishedWorkshops>>[number];
+// ✅ Definisi type manual (tidak import dari actions)
+type Workshop = {
+  id: string;
+  slug: string;
+  name: string;
+  city?: string | null;
+  description?: string | null;
+  specialties: string[];
+  openHour?: string | null;
+  closeHour?: string | null;
+  workshopServices: { id: string }[];
+};
 
 const SPECIALTIES = [
   "Semua",
@@ -36,12 +46,16 @@ export function BengkelListClient({ initialWorkshops }: Props) {
   const [activeSpecialty, setActiveSpecialty] = useState("Semua");
   const [isPending, startTransition] = useTransition();
 
+  // ✅ Ganti dari getPublishedWorkshops() ke fetch API route
   const load = (q?: string, specialty?: string) => {
     startTransition(async () => {
-      const data = await getPublishedWorkshops(
-        q,
-        specialty === "Semua" ? undefined : specialty,
-      );
+      const params = new URLSearchParams();
+      if (q) params.set("q", q);
+      if (specialty && specialty !== "Semua")
+        params.set("specialty", specialty);
+
+      const res = await fetch(`/api/workshops?${params.toString()}`);
+      const data: Workshop[] = await res.json();
       setWorkshops(data);
     });
   };

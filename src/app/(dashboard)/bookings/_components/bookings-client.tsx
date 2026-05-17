@@ -20,7 +20,7 @@ import { getOrders, confirmOrder, rejectOrder } from "../actions";
 import { formatDate } from "@/lib/utils";
 import { OrderStatus, OrderType } from "@prisma/client";
 
-type OrderWithRelations = Awaited<ReturnType<typeof getOrders>>[number];
+type OrderWithRelations = Awaited<ReturnType<typeof getOrders>>["data"][number];
 
 const TYPE_TABS: { label: string; value: OrderType | "ALL" }[] = [
   { label: "Semua", value: "ALL" },
@@ -65,8 +65,8 @@ export function BookingsClient({ initialOrders }: Props) {
 
   const load = () => {
     startTransition(async () => {
-      const data = await getOrders(activeStatus, activeType);
-      setOrders(data);
+      const result = await getOrders(activeStatus, activeType); // ← result = { data, meta }
+      setOrders(result.data); // ← ambil .data-nya
     });
   };
 

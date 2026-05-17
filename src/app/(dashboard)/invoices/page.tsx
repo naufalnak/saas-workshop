@@ -4,7 +4,7 @@ import { getInvoices } from "./actions";
 import { InvoicesClient } from "./create/_components/invoices-client";
 
 export default async function InvoicesPage() {
-  const invoices = await getInvoices();
+  const { data: invoices } = await getInvoices(); // ← destructure
   return (
     <>
       <Header title="Invoice" subtitle="Kelola invoice dan pembayaran" />

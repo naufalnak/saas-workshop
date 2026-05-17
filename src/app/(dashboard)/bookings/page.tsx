@@ -4,7 +4,7 @@ import { getOrders } from "./actions";
 import { BookingsClient } from "./_components/bookings-client";
 
 export default async function BookingsPage() {
-  const orders = await getOrders();
+  const { data: orders } = await getOrders(); // ← tambah destructure
   return (
     <>
       <Header

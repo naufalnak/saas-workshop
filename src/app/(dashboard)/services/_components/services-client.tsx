@@ -10,7 +10,9 @@ import { ServiceList } from "./service-list";
 import { getServices } from "../actions";
 import { ServiceStatus } from "@prisma/client";
 
-type ServiceWithRelations = Awaited<ReturnType<typeof getServices>>[number];
+type ServiceWithRelations = Awaited<
+  ReturnType<typeof getServices>
+>["data"][number];
 type VehicleOption = Awaited<
   ReturnType<typeof import("../actions").getVehiclesForSelect>
 >[number];
@@ -44,8 +46,8 @@ export function ServicesClient({
 
   const load = (status?: ServiceStatus | "ALL") => {
     startTransition(async () => {
-      const data = await getServices(status);
-      setServices(data);
+      const result = await getServices(status);
+      setServices(result.data);
     });
   };
 

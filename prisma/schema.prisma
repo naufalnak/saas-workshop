@@ -109,7 +109,6 @@ model Workshop {
   services         Service[]
   invoices         Invoice[]
   payments         Payment[]
-  customerAccounts CustomerAccount[]
   workshopServices WorkshopService[]  // ← TAMBAH
   orders           Order[]            // ← TAMBAH
 }
@@ -188,23 +187,7 @@ model Customer {
 
   workshop        Workshop         @relation(fields: [workshopId], references: [id])
   vehicles        Vehicle[]
-  customerAccount CustomerAccount? // ← TAMBAH INI
   bookingRequests BookingRequest[]
-}
-
-model CustomerAccount {
-  id         String   @id @default(uuid())
-  email      String
-  password   String
-  workshopId String
-  customerId String   @unique
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  workshop   Workshop @relation(fields: [workshopId], references: [id])
-  customer   Customer @relation(fields: [customerId], references: [id])
-
-  @@unique([email, workshopId])
 }
 
 model Vehicle {

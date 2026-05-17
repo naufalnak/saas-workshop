@@ -3,6 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
+import { getPaginationParams, getPaginationMeta } from "@/lib/pagination";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { InvoiceStatus } from "@prisma/client";
@@ -48,25 +49,42 @@ const paymentSchema = z.object({
 
 // ── queries ───────────────────────────────────────────────
 
-export async function getInvoices(status?: InvoiceStatus | "ALL") {
+export async function getInvoices(
+  status?: InvoiceStatus | "ALL",
+  page: number = 1,
+) {
   const workshopId = await getWorkshopId();
-  return prisma.invoice.findMany({
-    where: {
-      workshopId,
-      ...(status && status !== "ALL" ? { status } : {}),
-    },
-    include: {
-      service: {
-        include: {
-          vehicle: {
-            include: { customer: { select: { name: true, phone: true } } },
+  const { skip, take } = getPaginationParams(page);
+
+  const where = {
+    workshopId,
+    ...(status && status !== "ALL" ? { status } : {}),
+  };
+
+  const [invoices, total] = await Promise.all([
+    prisma.invoice.findMany({
+      where,
+      include: {
+        service: {
+          include: {
+            vehicle: {
+              include: { customer: { select: { name: true, phone: true } } },
+            },
           },
         },
+        payments: true,
       },
-      payments: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+    }),
+    prisma.invoice.count({ where }),
+  ]);
+
+  return {
+    data: invoices,
+    meta: getPaginationMeta(total, page, take),
+  };
 }
 
 export async function getInvoiceById(id: string) {
@@ -116,7 +134,6 @@ export async function createInvoice(formData: FormData) {
     dueDate: formData.get("dueDate") || undefined,
   });
 
-  // Cek service valid & belum punya invoice
   const service = await prisma.service.findFirst({
     where: { id: data.serviceId, workshopId },
     include: { serviceItems: true, invoice: true },
@@ -159,7 +176,6 @@ export async function addPayment(invoiceId: string, formData: FormData) {
     notes: formData.get("notes") || undefined,
   });
 
-  // Verify invoice belongs to this workshop
   const invoice = await prisma.invoice.findFirst({
     where: { id: invoiceId, workshopId },
   });

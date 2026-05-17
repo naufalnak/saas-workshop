@@ -3,7 +3,9 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
+import { getPaginationParams, getPaginationMeta } from "@/lib/pagination";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 const vehicleSchema = z.object({
@@ -20,27 +22,46 @@ const vehicleSchema = z.object({
   customerId: z.string().min(1, "Pilih pelanggan"),
 });
 
-export async function getVehicles(search?: string) {
+export async function getVehicles(search?: string, page: number = 1) {
   const workshopId = await getWorkshopId();
-  return prisma.vehicle.findMany({
-    where: {
-      workshopId,
-      ...(search
-        ? {
-            OR: [
-              { plateNumber: { contains: search, mode: "insensitive" } },
-              { brand: { contains: search, mode: "insensitive" } },
-              { model: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-    },
-    include: {
-      customer: { select: { id: true, name: true, phone: true } },
-      _count: { select: { services: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const { skip, take } = getPaginationParams(page);
+
+  const where = {
+    workshopId,
+    ...(search
+      ? {
+          OR: [
+            {
+              plateNumber: {
+                contains: search,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
+            { brand: { contains: search, mode: Prisma.QueryMode.insensitive } },
+            { model: { contains: search, mode: Prisma.QueryMode.insensitive } },
+          ],
+        }
+      : {}),
+  };
+
+  const [vehicles, total] = await Promise.all([
+    prisma.vehicle.findMany({
+      where,
+      include: {
+        customer: { select: { id: true, name: true, phone: true } },
+        _count: { select: { services: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+    }),
+    prisma.vehicle.count({ where }),
+  ]);
+
+  return {
+    data: vehicles,
+    meta: getPaginationMeta(total, page, take),
+  };
 }
 
 export async function getCustomersForSelect() {

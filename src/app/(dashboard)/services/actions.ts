@@ -3,6 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
+import { getPaginationParams, getPaginationMeta } from "@/lib/pagination";
 import { generateServiceNo } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -53,25 +54,40 @@ const serviceItemSchema = z.object({
 
 // ── queries ───────────────────────────────────────────────
 
-export async function getServices(status?: ServiceStatus | "ALL") {
+export async function getServices(
+  status?: ServiceStatus | "ALL",
+  page: number = 1,
+) {
   const workshopId = await getWorkshopId();
-  const services = await prisma.service.findMany({
-    where: {
-      workshopId,
-      ...(status && status !== "ALL" ? { status } : {}),
-    },
-    include: {
-      vehicle: {
-        include: { customer: { select: { name: true } } },
-      },
-      mechanic: { select: { id: true, name: true } },
-      serviceItems: true,
-      _count: { select: { serviceItems: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const { skip, take } = getPaginationParams(page);
 
-  return services.map(serializeService);
+  const where = {
+    workshopId,
+    ...(status && status !== "ALL" ? { status } : {}),
+  };
+
+  const [services, total] = await Promise.all([
+    prisma.service.findMany({
+      where,
+      include: {
+        vehicle: {
+          include: { customer: { select: { name: true } } },
+        },
+        mechanic: { select: { id: true, name: true } },
+        serviceItems: true,
+        _count: { select: { serviceItems: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+    }),
+    prisma.service.count({ where }),
+  ]);
+
+  return {
+    data: services.map(serializeService),
+    meta: getPaginationMeta(total, page, take),
+  };
 }
 
 export async function getServiceById(id: string) {
@@ -170,7 +186,6 @@ export async function updateServiceStatus(id: string, status: ServiceStatus) {
 export async function deleteService(id: string) {
   const workshopId = await getWorkshopId();
 
-  // Hapus serviceItems dulu, baru hapus service
   await prisma.$transaction([
     prisma.serviceItem.deleteMany({ where: { serviceId: id } }),
     prisma.service.delete({ where: { id, workshopId } }),
@@ -184,7 +199,6 @@ export async function deleteService(id: string) {
 export async function addServiceItem(serviceId: string, formData: FormData) {
   const workshopId = await getWorkshopId();
 
-  // Verify service belongs to this workshop
   const service = await prisma.service.findFirst({
     where: { id: serviceId, workshopId },
   });

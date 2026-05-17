@@ -3,7 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 
 const workshopSchema = z.object({
@@ -61,6 +61,7 @@ export async function updateWorkshopProfile(formData: FormData) {
     data: { ...data, specialties },
   });
 
+  revalidateTag("workshops", "revalidate");
   revalidatePath("/settings");
   revalidatePath("/bengkel");
 }

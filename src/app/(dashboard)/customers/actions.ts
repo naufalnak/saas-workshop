@@ -3,6 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
+import { getPaginationParams, getPaginationMeta } from "@/lib/pagination";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -13,23 +14,47 @@ const customerSchema = z.object({
   address: z.string().optional(),
 });
 
-export async function getCustomers(search?: string) {
+export async function getCustomers(search?: string, page: number = 1) {
   const workshopId = await getWorkshopId();
-  return prisma.customer.findMany({
-    where: {
-      workshopId,
-      ...(search
-        ? {
-            OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { phone: { contains: search } },
-            ],
-          }
-        : {}),
-    },
-    include: { _count: { select: { vehicles: true } } },
-    orderBy: { createdAt: "desc" },
-  });
+  const { skip, take } = getPaginationParams(page);
+
+  const [customers, total] = await Promise.all([
+    prisma.customer.findMany({
+      where: {
+        workshopId,
+        ...(search
+          ? {
+              OR: [
+                { name: { contains: search, mode: "insensitive" } },
+                { phone: { contains: search } },
+              ],
+            }
+          : {}),
+      },
+      include: { _count: { select: { vehicles: true } } },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+    }),
+    prisma.customer.count({
+      where: {
+        workshopId,
+        ...(search
+          ? {
+              OR: [
+                { name: { contains: search, mode: "insensitive" } },
+                { phone: { contains: search } },
+              ],
+            }
+          : {}),
+      },
+    }),
+  ]);
+
+  return {
+    data: customers,
+    meta: getPaginationMeta(total, page, take),
+  };
 }
 
 export async function createCustomer(formData: FormData) {

@@ -3,6 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
+import { getPaginationParams, getPaginationMeta } from "@/lib/pagination";
 import { revalidatePath } from "next/cache";
 import { OrderStatus, OrderType } from "@prisma/client";
 import { generateServiceNo } from "@/lib/utils";
@@ -10,25 +11,41 @@ import { generateServiceNo } from "@/lib/utils";
 export async function getOrders(
   status?: OrderStatus | "ALL",
   type?: OrderType | "ALL",
+  page: number = 1,
 ) {
   const workshopId = await getWorkshopId();
-  return prisma.order.findMany({
-    where: {
-      workshopId,
-      ...(status && status !== "ALL" ? { status } : {}),
-      ...(type && type !== "ALL" ? { type } : {}),
-    },
-    include: {
-      globalCustomer: {
-        select: { id: true, name: true, email: true, phone: true },
+  const { skip, take } = getPaginationParams(page);
+
+  const where = {
+    workshopId,
+    ...(status && status !== "ALL" ? { status } : {}),
+    ...(type && type !== "ALL" ? { type } : {}),
+  };
+
+  const [orders, total] = await Promise.all([
+    prisma.order.findMany({
+      where,
+      include: {
+        globalCustomer: {
+          select: { id: true, name: true, email: true, phone: true },
+        },
+        vehicle: true,
+        service: { select: { id: true, serviceNo: true, status: true } },
       },
-      vehicle: true,
-      service: { select: { id: true, serviceNo: true, status: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+    }),
+    prisma.order.count({ where }),
+  ]);
+
+  return {
+    data: orders,
+    meta: getPaginationMeta(total, page, take),
+  };
 }
 
+// ... sisa fungsi tidak berubah
 export async function confirmOrder(orderId: string) {
   const workshopId = await getWorkshopId();
   const order = await prisma.order.findFirst({
@@ -36,7 +53,6 @@ export async function confirmOrder(orderId: string) {
   });
   if (!order) throw new Error("Order tidak ditemukan");
 
-  // Cari customer di workshop ini
   let customer = await prisma.customer.findFirst({
     where: { workshopId, name: order.guestName ?? undefined },
   });
@@ -62,7 +78,6 @@ export async function confirmOrder(orderId: string) {
 
   if (!customer) throw new Error("Customer tidak ditemukan");
 
-  // Handle vehicle
   let vehicleId = order.vehicleId;
   if (!vehicleId) {
     const placeholder = await prisma.vehicle.create({
@@ -77,7 +92,6 @@ export async function confirmOrder(orderId: string) {
     vehicleId = placeholder.id;
   }
 
-  // Buat service order
   const service = await prisma.service.create({
     data: {
       serviceNo: generateServiceNo(),
@@ -89,7 +103,6 @@ export async function confirmOrder(orderId: string) {
     },
   });
 
-  // Update order
   await prisma.order.update({
     where: { id: orderId },
     data: {

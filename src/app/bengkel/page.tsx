@@ -5,10 +5,14 @@ import PublicNavbar from "@/components/public-navbar";
 import { BengkelListClient } from "./_components/bengkel-list-client";
 
 export default async function BengkelPage() {
-  const [workshops, session] = await Promise.all([
+  const [rawWorkshops, session] = await Promise.all([
     getPublishedWorkshops(),
     getGlobalCustomerSession(),
   ]);
+
+  const workshops = rawWorkshops.filter(
+    (w) => w.slug !== null,
+  ) as ((typeof rawWorkshops)[number] & { slug: string })[];
 
   return (
     <div className="min-h-screen bg-gray-50">

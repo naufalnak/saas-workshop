@@ -9,7 +9,9 @@ import { formatDate } from "@/lib/utils";
 import type { getServices } from "../actions";
 import { ServiceStatus } from "@prisma/client";
 
-type ServiceWithRelations = Awaited<ReturnType<typeof getServices>>[number];
+type ServiceWithRelations = Awaited<
+  ReturnType<typeof getServices>
+>["data"][number];
 
 const STATUS_CONFIG: Record<
   ServiceStatus,

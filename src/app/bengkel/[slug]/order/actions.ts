@@ -1,4 +1,3 @@
-// src/app/bengkel/[slug]/order/actions.ts
 "use server";
 
 import { prisma } from "@/lib/prisma";
@@ -51,50 +50,6 @@ export async function createOrder(
     vehicleYear,
   } = parsed.data;
 
-  // Cari atau buat Customer di workshop ini
-  let customer = await prisma.customer.findFirst({
-    where: {
-      workshopId,
-      customerAccount: {
-        email: session.email,
-      },
-    },
-  });
-
-  if (!customer) {
-    customer = await prisma.customer.create({
-      data: {
-        name: session.name,
-        phone: session.phone ?? null,
-        workshopId,
-      },
-    });
-  }
-
-  // Cari atau buat Vehicle kalau ada info kendaraan
-  let vehicleId: string | undefined;
-  if (plateNumber && vehicleBrand && vehicleModel) {
-    const existingVehicle = await prisma.vehicle.findFirst({
-      where: { workshopId, plateNumber, customerId: customer.id },
-    });
-
-    if (existingVehicle) {
-      vehicleId = existingVehicle.id;
-    } else {
-      const newVehicle = await prisma.vehicle.create({
-        data: {
-          plateNumber,
-          brand: vehicleBrand,
-          model: vehicleModel,
-          year: vehicleYear ?? null,
-          customerId: customer.id,
-          workshopId,
-        },
-      });
-      vehicleId = newVehicle.id;
-    }
-  }
-
   const order = await prisma.order.create({
     data: {
       orderNo: generateOrderNo(),
@@ -105,7 +60,11 @@ export async function createOrder(
       preferredDate: preferredDate ? new Date(preferredDate) : null,
       workshopId,
       globalCustomerId: session.id,
-      vehicleId: vehicleId ?? null,
+      guestName: session.name,
+      guestPhone: session.phone ?? null,
+      // Info kendaraan disimpan sebagai notes tambahan jika ada,
+      // vehicle akan di-assign oleh workshop dari dashboard
+      vehicleId: null,
     },
   });
 
@@ -140,9 +99,6 @@ export async function getOrderById(id: string) {
   const session = await getGlobalCustomerSession();
   if (!session) redirect("/masuk");
 
-  console.log("SESSION ID:", session.id);
-  console.log("ORDER ID:", id);
-
   const order = await prisma.order.findFirst({
     where: { id, globalCustomerId: session.id },
     include: {
@@ -168,6 +124,5 @@ export async function getOrderById(id: string) {
     },
   });
 
-  console.log("ORDER FOUND:", order?.id ?? "NULL");
   return order;
 }

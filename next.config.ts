@@ -2,11 +2,8 @@ import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
-  experimental: {
-    serverComponentsExternalPackages: ["bcryptjs", "@prisma/client"],
-  },
+  serverExternalPackages: ["bcryptjs", "@prisma/client"],
 };
 
 export default withSentryConfig(nextConfig, {

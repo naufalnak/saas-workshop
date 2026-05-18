@@ -361,18 +361,26 @@ GlobalCustomer    ← akun pelanggan global (lintas bengkel)
 - [x] Public workshop profile dengan SEO metadata
 - [x] Print invoice
 - [x] Dummy data seeder
+- [x] Email verification saat register
+- [x] Notifikasi WhatsApp (via Fonnte/WA Gateway)
 
 ### Direncanakan 🗓️
 
-- [ ] Notifikasi WhatsApp (via Fonnte/WA Gateway) saat booking dikonfirmasi
+#### 🥇 Tier 1 — Operasional & kepercayaan
+
 - [ ] Laporan keuangan — rekap pendapatan per bulan
-- [ ] Manajemen stok spare part (inventory)
-- [ ] Upload foto kendaraan & hasil servis
+
+#### 🥈 Tier 2 — Nilai produk
+
 - [ ] Review & rating bengkel dari pelanggan
 - [ ] Export laporan ke PDF/Excel
-- [ ] Email verification saat register
-- [ ] Dark mode
+- [ ] Upload foto kendaraan & hasil servis
+
+#### 🥉 Tier 3 — Nice to have
+
+- [ ] Manajemen stok spare part (inventory)
 - [ ] Progressive Web App (PWA)
+- [ ] Dark mode
 
 ---
 

@@ -45,7 +45,8 @@ export default function RegisterPage() {
     if (!res.ok) {
       setError(json.error || "Terjadi kesalahan");
     } else {
-      router.push("/login?registered=1");
+      // Redirect ke check-email bukan ke login
+      router.push(`/check-email?type=operator&email=${data.email}`);
     }
   };
 

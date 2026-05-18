@@ -47,7 +47,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) return null;
 
-        // Return harus explicit match interface User
+        // ← TAMBAH cek verifikasi
+        if (!user.emailVerified) return null;
+
         return {
           id: user.id,
           name: user.name,

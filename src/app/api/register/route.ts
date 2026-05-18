@@ -4,6 +4,10 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { checkRateLimit } from "@/lib/rate-limit";
+import {
+  generateVerifyToken,
+  sendOperatorVerificationEmail,
+} from "@/lib/email";
 
 const schema = z.object({
   workshopName: z.string().min(3),
@@ -32,18 +36,17 @@ async function uniqueSlug(base: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limit
+  const ip = req.headers.get("x-forwarded-for") ?? "anonymous";
+  const { success } = await checkRateLimit(ip, "register");
+  if (!success) {
+    return NextResponse.json(
+      { error: "Terlalu banyak percobaan. Coba lagi dalam 10 menit." },
+      { status: 429 },
+    );
+  }
+
   try {
-    // Rate limit check
-    const ip = req.headers.get("x-forwarded-for") ?? "anonymous";
-    const { success } = await checkRateLimit(ip, "register");
-
-    if (!success) {
-      return NextResponse.json(
-        { error: "Terlalu banyak percobaan. Coba lagi dalam 10 menit." },
-        { status: 429 },
-      );
-    }
-
     const body = await req.json();
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
@@ -62,7 +65,9 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
     const slug = await uniqueSlug(generateSlug(workshopName));
+    const { token, exp } = generateVerifyToken();
 
+    // Buat workshop + user dalam transaksi
     const result = await prisma.$transaction(async (tx) => {
       const workshop = await tx.workshop.create({
         data: { name: workshopName, phone, city, slug },
@@ -74,13 +79,27 @@ export async function POST(req: NextRequest) {
           password: hashedPassword,
           role: "OWNER",
           workshopId: workshop.id,
+          emailVerified: false,
+          verifyToken: token,
+          verifyTokenExp: exp,
         },
       });
       return { workshop, user };
     });
 
+    // Kirim email verifikasi
+    await sendOperatorVerificationEmail({
+      email,
+      name,
+      workshopName,
+      token,
+    });
+
     return NextResponse.json(
-      { message: "Berhasil daftar", workshopId: result.workshop.id },
+      {
+        message: "Berhasil daftar. Cek email untuk verifikasi akun.",
+        workshopId: result.workshop.id,
+      },
       { status: 201 },
     );
   } catch (error) {

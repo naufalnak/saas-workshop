@@ -237,6 +237,7 @@ async function main() {
         password: hashedPassword,
         role: UserRole.OWNER,
         workshopId: workshop1.id,
+        emailVerified: true,
       },
     }),
     prisma.user.create({
@@ -246,6 +247,7 @@ async function main() {
         password: hashedPassword,
         role: UserRole.MECHANIC,
         workshopId: workshop1.id,
+        emailVerified: true,
       },
     }),
     prisma.user.create({
@@ -255,6 +257,7 @@ async function main() {
         password: hashedPassword,
         role: UserRole.MECHANIC,
         workshopId: workshop1.id,
+        emailVerified: true,
       },
     }),
     // Workshop 2 users
@@ -265,6 +268,7 @@ async function main() {
         password: hashedPassword,
         role: UserRole.OWNER,
         workshopId: workshop2.id,
+        emailVerified: true,
       },
     }),
     prisma.user.create({
@@ -274,6 +278,7 @@ async function main() {
         password: hashedPassword,
         role: UserRole.MECHANIC,
         workshopId: workshop2.id,
+        emailVerified: true,
       },
     }),
     // Workshop 3 users
@@ -284,6 +289,7 @@ async function main() {
         password: hashedPassword,
         role: UserRole.OWNER,
         workshopId: workshop3.id,
+        emailVerified: true,
       },
     }),
     // Workshop 4 users
@@ -294,6 +300,7 @@ async function main() {
         password: hashedPassword,
         role: UserRole.OWNER,
         workshopId: workshop4.id,
+        emailVerified: true,
       },
     }),
   ]);
@@ -311,6 +318,7 @@ async function main() {
         email: "andi@gmail.com",
         password: hashedPassword,
         phone: "081234567890",
+        emailVerified: true,
       },
     }),
     prisma.globalCustomer.create({
@@ -319,6 +327,7 @@ async function main() {
         email: "siti@gmail.com",
         password: hashedPassword,
         phone: "082345678901",
+        emailVerified: true,
       },
     }),
     prisma.globalCustomer.create({
@@ -327,6 +336,7 @@ async function main() {
         email: "rizki@gmail.com",
         password: hashedPassword,
         phone: "083456789012",
+        emailVerified: true,
       },
     }),
     prisma.globalCustomer.create({
@@ -335,6 +345,7 @@ async function main() {
         email: "maya@gmail.com",
         password: hashedPassword,
         phone: "084567890123",
+        emailVerified: true,
       },
     }),
   ]);

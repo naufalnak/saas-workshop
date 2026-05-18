@@ -21,6 +21,7 @@ type FormData = z.infer<typeof schema>;
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [unverified, setUnverified] = useState(false);
 
   const [error, setError] = useState("");
   const {
@@ -33,6 +34,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: FormData) => {
     setError("");
+    setUnverified(false);
     const res = await signIn("credentials", {
       email: data.email,
       password: data.password,
@@ -40,10 +42,12 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError("Email atau password salah");
-    } else {
-      router.push("/dashboard");
-      router.refresh();
+      if (res.error === "EMAIL_NOT_VERIFIED") {
+        setUnverified(true);
+        setError("Email kamu belum diverifikasi.");
+      } else {
+        setError("Email atau password salah");
+      }
     }
   };
 
@@ -66,7 +70,18 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
-                {error}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
+                    {error}
+                    {unverified && (
+                      <Link
+                        href="/resend-verification"
+                        className="block mt-1 text-blue-600 hover:underline text-xs">
+                        Kirim ulang email verifikasi →
+                      </Link>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 

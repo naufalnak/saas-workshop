@@ -8,7 +8,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { InvoiceStatus } from "@prisma/client";
 import { generateInvoiceNo } from "@/lib/utils";
+import { WA, getCustomerPhone } from "@/lib/whatsapp";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 // ── helpers ───────────────────────────────────────────────
 
 async function recalculateInvoiceStatus(invoiceId: string) {
@@ -136,18 +138,27 @@ export async function createInvoice(formData: FormData) {
 
   const service = await prisma.service.findFirst({
     where: { id: data.serviceId, workshopId },
-    include: { serviceItems: true, invoice: true },
+    include: {
+      serviceItems: true,
+      invoice: true,
+      vehicle: {
+        include: { customer: true },
+      },
+      order: {
+        include: { globalCustomer: true },
+      },
+      workshop: { select: { name: true } },
+    },
   });
 
   if (!service) throw new Error("Service tidak ditemukan");
-  if (service.invoice)
-    throw new Error("Invoice sudah dibuat untuk service ini");
+  if (service.invoice) throw new Error("Invoice sudah dibuat");
 
   const subtotal = service.serviceItems.reduce(
     (sum, item) => sum + Number(item.total),
     0,
   );
-  const total = subtotal + data.tax - data.discount;
+  const total = Math.max(0, subtotal + data.tax - data.discount);
 
   const invoice = await prisma.invoice.create({
     data: {
@@ -155,13 +166,36 @@ export async function createInvoice(formData: FormData) {
       subtotal,
       tax: data.tax,
       discount: data.discount,
-      total: Math.max(0, total),
+      total,
       status: "UNPAID",
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
       workshopId,
       serviceId: data.serviceId,
     },
   });
+
+  // ── Kirim notifikasi WA ──────────────────────────────────
+  const phone = await getCustomerPhone(
+    service.order?.globalCustomerId ?? null,
+    service.vehicle.customerId,
+    prisma,
+  );
+
+  const customerName =
+    service.order?.globalCustomer?.name ?? service.vehicle.customer.name;
+
+  if (phone) {
+    WA.invoiceCreated({
+      customerPhone: phone,
+      customerName,
+      workshopName: service.workshop.name,
+      invoiceNo: invoice.invoiceNo,
+      total,
+      dueDate: invoice.dueDate,
+      invoiceId: invoice.id,
+      appUrl: APP_URL,
+    }).catch((err) => console.error("[WA] invoiceCreated error:", err));
+  }
 
   revalidatePath("/invoices");
   return invoice.id;

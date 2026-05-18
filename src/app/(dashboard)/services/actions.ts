@@ -8,8 +8,11 @@ import { generateServiceNo } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma, ServiceStatus } from "@prisma/client";
+import { WA, getCustomerPhone } from "@/lib/whatsapp";
 
 // ── helpers ──────────────────────────────────────────────
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 type WithServiceItems<T> = T & {
   serviceItems: {
@@ -171,6 +174,27 @@ export async function updateService(id: string, formData: FormData) {
 
 export async function updateServiceStatus(id: string, status: ServiceStatus) {
   const workshopId = await getWorkshopId();
+
+  const service = await prisma.service.findFirst({
+    where: { id, workshopId },
+    include: {
+      vehicle: {
+        include: {
+          customer: true,
+        },
+      },
+      workshop: { select: { name: true } },
+      invoice: true,
+      order: {
+        include: {
+          globalCustomer: true,
+        },
+      },
+    },
+  });
+
+  if (!service) throw new Error("Service tidak ditemukan");
+
   await prisma.service.update({
     where: { id, workshopId },
     data: {
@@ -178,6 +202,32 @@ export async function updateServiceStatus(id: string, status: ServiceStatus) {
       ...(status === "DONE" ? { endDate: new Date() } : {}),
     },
   });
+
+  // ── Kirim notifikasi WA saat servis DONE ─────────────────
+  if (status === "DONE") {
+    const phone = await getCustomerPhone(
+      service.order?.globalCustomerId ?? null,
+      service.vehicle.customerId,
+      prisma,
+    );
+
+    const customerName =
+      service.order?.globalCustomer?.name ?? service.vehicle.customer.name;
+
+    if (phone) {
+      WA.serviceCompleted({
+        customerPhone: phone,
+        customerName,
+        workshopName: service.workshop.name,
+        serviceNo: service.serviceNo,
+        plateNumber: service.vehicle.plateNumber,
+        vehicleName: `${service.vehicle.brand} ${service.vehicle.model}`,
+        hasInvoice: !!service.invoice,
+        invoiceId: service.invoice?.id,
+        appUrl: APP_URL,
+      }).catch((err) => console.error("[WA] serviceCompleted error:", err));
+    }
+  }
 
   revalidatePath("/services");
   revalidatePath(`/services/${id}`);

@@ -4,7 +4,7 @@
 import { useTransition, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Wrench, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Wrench, Loader2 } from "lucide-react";
 import { loginCustomer } from "../actions";
 
 export function MasukForm() {
@@ -13,6 +13,7 @@ export function MasukForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("from") ?? "/akun";
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,14 +68,26 @@ export function MasukForm() {
 
             <div>
               <label className={labelClass}>Password</label>
-              <input
-                name="password"
-                type="password"
-                required
-                placeholder="••••••••"
-                autoComplete="current-password"
-                className={inputClass}
-              />
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button
@@ -105,6 +118,12 @@ export function MasukForm() {
           Kamu operator bengkel?{" "}
           <Link href="/login" className="text-blue-600 hover:underline">
             Login operator di sini
+          </Link>
+        </p>
+
+        <p className="text-center text-xs text-gray-400 mt-2">
+          <Link href="/" className="hover:text-gray-600 transition">
+            ← Kembali ke halaman utama
           </Link>
         </p>
       </div>

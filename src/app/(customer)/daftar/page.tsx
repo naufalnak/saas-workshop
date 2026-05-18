@@ -3,13 +3,14 @@
 
 import { useTransition, useRef, useState } from "react";
 import Link from "next/link";
-import { Wrench, Loader2, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Wrench, Loader2, ArrowRight } from "lucide-react";
 import { registerCustomer } from "../actions";
 
 export default function DaftarPage() {
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -88,13 +89,25 @@ export default function DaftarPage() {
               <label className={labelClass}>
                 Password <span className="text-red-500">*</span>
               </label>
-              <input
-                name="password"
-                type="password"
-                required
-                placeholder="Minimal 6 karakter"
-                className={inputClass}
-              />
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="Minimal 6 karakter"
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button

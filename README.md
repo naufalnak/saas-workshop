@@ -395,10 +395,10 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 
 <div align="center">
-  <p>Dibuat dengan ☕ oleh <a href="https://github.com/username">Andre Naufal</a></p>
+  <p>Dibuat dengan 😎🤙🎧 oleh <a href="https://github.com/naufalnak">Naufal Andresya</a></p>
   <p>
-    <a href="https://bengkelku.vercel.app">Live Demo</a> ·
-    <a href="https://github.com/username/bengkelku/issues">Report Bug</a> ·
-    <a href="https://github.com/username/bengkelku/issues">Request Feature</a>
+    <a href="https://saas-workshop-ruby.vercel.app/">Live Demo</a> ·
+    <a href="#">Report Bug</a> ·
+    <a href="#">Request Feature</a>
   </p>
 </div>

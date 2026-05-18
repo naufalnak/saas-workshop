@@ -8,7 +8,14 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "BengkelKu — Workshop Management",
-  description: "Sistem manajemen bengkel kendaraan",
+  description:
+    "Platform SaaS manajemen bengkel kendaraan — kelola order servis, invoice digital, dan pembayaran dalam satu tempat. Dilengkapi portal booking untuk pelanggan.",
+  openGraph: {
+    title: "BengkelKu — Workshop Management",
+    description:
+      "Platform SaaS manajemen bengkel kendaraan — kelola order servis, invoice digital, dan pembayaran dalam satu tempat. Dilengkapi portal booking untuk pelanggan.",
+    images: ["/img/preview.png"],
+  },
 };
 
 export default function RootLayout({

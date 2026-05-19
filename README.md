@@ -226,20 +226,24 @@ Buat file `.env` di root project dengan variabel berikut:
 | `UPSTASH_REDIS_REST_URL`   | URL Redis Upstash untuk rate limiting                      | `https://xxx.upstash.io`                                                                       |
 | `UPSTASH_REDIS_REST_TOKEN` | Token Redis Upstash                                        | `AXxx...`                                                                                      |
 
-Contoh file `.env.example`:
+Buat file `.env` di root project, lalu isi variabel berikut:
 
 ```env
 # Database (Supabase)
 DATABASE_URL="postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
 DIRECT_URL="postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres"
 
-# Auth
-NEXTAUTH_SECRET="your-secret-min-32-chars"
+# Auth (NextAuth)
+NEXTAUTH_SECRET="your-secret-min-32-chars"  # Generate: openssl rand -base64 32
 NEXTAUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
-# Rate Limiting (Upstash)
-UPSTASH_REDIS_REST_URL="https://your-redis.upstash.io"
-UPSTASH_REDIS_REST_TOKEN="your-token"
+# Email (Resend)
+RESEND_API_KEY="your-resend-api-key"
+RESEND_FROM_EMAIL="onboarding@resend.dev"  # Ganti dengan domain sendiri saat production
+
+# WhatsApp (Fonnte)
+FONNTE_API_TOKEN="your-fonnte-token"
 ```
 
 ---

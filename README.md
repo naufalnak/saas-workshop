@@ -215,17 +215,6 @@ Buka [http://localhost:3000](http://localhost:3000)
 
 ## Environment Variables
 
-Buat file `.env` di root project dengan variabel berikut:
-
-| Variable                   | Keterangan                                                 | Contoh                                                                                         |
-| -------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`             | Connection string Supabase (transaction pooler, port 6543) | `postgresql://postgres.xxx:pass@aws-0-region.pooler.supabase.com:6543/postgres?pgbouncer=true` |
-| `DIRECT_URL`               | Connection string Supabase (direct, port 5432)             | `postgresql://postgres.xxx:pass@aws-0-region.pooler.supabase.com:5432/postgres`                |
-| `NEXTAUTH_SECRET`          | Secret untuk NextAuth JWT, minimal 32 karakter             | Generate: `openssl rand -base64 32`                                                            |
-| `NEXTAUTH_URL`             | Base URL aplikasi                                          | `http://localhost:3000` (dev) / `https://domain.com` (prod)                                    |
-| `UPSTASH_REDIS_REST_URL`   | URL Redis Upstash untuk rate limiting                      | `https://xxx.upstash.io`                                                                       |
-| `UPSTASH_REDIS_REST_TOKEN` | Token Redis Upstash                                        | `AXxx...`                                                                                      |
-
 Buat file `.env` di root project, lalu isi variabel berikut:
 
 ```env
@@ -240,11 +229,22 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 # Email (Resend)
 RESEND_API_KEY="your-resend-api-key"
-RESEND_FROM_EMAIL="onboarding@resend.dev"  # Ganti dengan domain sendiri saat production
+RESEND_FROM_EMAIL="onboarding@resend.dev"
 
 # WhatsApp (Fonnte)
 FONNTE_API_TOKEN="your-fonnte-token"
 ```
+
+| Variable              | Keterangan                                                 | Contoh                                                                                         |
+| --------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`        | Connection string Supabase (transaction pooler, port 6543) | `postgresql://postgres.xxx:pass@aws-0-region.pooler.supabase.com:6543/postgres?pgbouncer=true` |
+| `DIRECT_URL`          | Connection string Supabase (direct, port 5432)             | `postgresql://postgres.xxx:pass@aws-0-region.pooler.supabase.com:5432/postgres`                |
+| `NEXTAUTH_SECRET`     | Secret untuk NextAuth JWT, minimal 32 karakter             | Generate: `openssl rand -base64 32`                                                            |
+| `NEXTAUTH_URL`        | Base URL aplikasi                                          | `http://localhost:3000` (dev) / `https://domain.com` (prod)                                    |
+| `NEXT_PUBLIC_APP_URL` | Base URL publik aplikasi                                   | `http://localhost:3000` (dev) / `https://domain.com` (prod)                                    |
+| `RESEND_API_KEY`      | API key dari Resend untuk kirim email                      | `re_xxx...`                                                                                    |
+| `RESEND_FROM_EMAIL`   | Alamat pengirim email                                      | `onboarding@resend.dev` (testing)                                                              |
+| `FONNTE_API_TOKEN`    | Token API Fonnte untuk kirim WhatsApp                      | `your-token`                                                                                   |
 
 ---
 

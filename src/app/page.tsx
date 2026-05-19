@@ -1,6 +1,6 @@
 // src/app/page.tsx
 import { getGlobalCustomerSession } from "@/lib/global-customer-auth";
-import PublicNavbar from "@/components/public-navbar";
+import Navbar from "@/components/landing/navbar";
 import Hero from "@/components/landing/hero";
 import HowItWorks from "@/components/landing/how-it-works";
 import FeaturedWorkshops from "@/components/landing/featured-workshops";
@@ -17,8 +17,8 @@ export default async function LandingPage() {
   ]);
 
   return (
-    <main className="min-h-screen bg-white">
-      <PublicNavbar session={session} />
+    <main className="min-h-screen">
+      <Navbar session={session} />
       <Hero session={session} />
       <HowItWorks />
       <FeaturedWorkshops workshops={workshops} />

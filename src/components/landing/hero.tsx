@@ -2,8 +2,18 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, Search, Wrench, CheckCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Search,
+  Shield,
+  Clock,
+  Star,
+  CheckCircle,
+  Wrench,
+  Car,
+} from "lucide-react";
 import type { GlobalCustomerSession } from "@/lib/global-customer-auth";
 
 interface Props {
@@ -12,136 +22,220 @@ interface Props {
 
 export default function Hero({ session }: Props) {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white pt-16">
-      {/* Background blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-100 rounded-full opacity-40 blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-72 h-72 bg-indigo-100 rounded-full opacity-30 blur-3xl" />
-        <div className="absolute -bottom-20 right-1/4 w-64 h-64 bg-blue-50 rounded-full opacity-50 blur-3xl" />
+    <section
+      id="hero"
+      className="relative min-h-screen flex items-center overflow-hidden bg-[#0B1C3D]">
+      {/* Background image dengan overlay */}
+      <div className="absolute inset-0">
+        <Image
+          src="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?w=1920&q=80"
+          alt="Bengkel kendaraan profesional"
+          fill
+          className="object-cover opacity-20"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B1C3D] via-[#0B1C3D]/90 to-[#0B1C3D]/60" />
       </div>
 
-      <div className="relative max-w-5xl mx-auto px-6 text-center">
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
-          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-          Platform bengkel kendaraan #1 di Indonesia
-        </motion.div>
+      {/* Decorative elements */}
+      <div className="absolute top-20 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl" />
 
-        {/* Heading */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight mb-5">
-          Servis Kendaraan Jadi
-          <br />
-          <span className="text-blue-600">Lebih Mudah</span>
-        </motion.h1>
+      <div className="relative max-w-7xl mx-auto px-6 pt-24 pb-16 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left — Content */}
+          <div>
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 text-red-400 text-xs font-semibold px-4 py-2 rounded-full mb-6 uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
+              Platform Bengkel #1 Indonesia
+            </motion.div>
 
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-lg text-gray-500 max-w-2xl mx-auto mb-8 leading-relaxed">
-          Temukan bengkel terpercaya, booking jadwal servis, dan pantau progress
-          kendaraan kamu — semua dari satu platform.
-        </motion.p>
+            {/* Heading */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-5">
+              Servis Kendaraan <span className="text-red-500">Profesional</span>
+              <br />& Terpercaya
+            </motion.h1>
 
-        {/* Search bar dummy */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex items-center gap-3 max-w-lg mx-auto bg-white border border-gray-300 rounded-2xl px-5 py-3.5 shadow-lg mb-6">
-          <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
-          <Link
-            href="/bengkel"
-            className="flex-1 text-left text-gray-400 text-sm hover:text-gray-600 transition">
-            Cari bengkel di kotamu...
-          </Link>
-          <Link
-            href="/bengkel"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-xl transition flex-shrink-0">
-            Cari
-          </Link>
-        </motion.div>
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-blue-200 text-lg mb-8 leading-relaxed max-w-xl">
+              Temukan bengkel terpercaya di sekitarmu. Booking jadwal servis,
+              pantau progress kendaraan secara realtime, dan terima invoice
+              digital — semua dalam satu platform.
+            </motion.p>
 
-        {/* Highlights */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex flex-wrap items-center justify-center gap-4 mb-10">
-          {[
-            "Booking & Walk-in",
-            "Pantau status realtime",
-            "Invoice digital",
-          ].map((h) => (
-            <div
-              key={h}
-              className="flex items-center gap-1.5 text-sm text-gray-600">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              {h}
+            {/* Search bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex items-center gap-0 mb-8 max-w-lg">
+              <div className="flex items-center gap-3 bg-white flex-1 px-5 py-4 rounded-l-2xl">
+                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Link
+                  href="/bengkel"
+                  className="text-gray-400 text-sm flex-1 hover:text-gray-600 transition">
+                  Cari bengkel di kotamu...
+                </Link>
+              </div>
+              <Link
+                href="/bengkel"
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-r-2xl font-semibold text-sm transition whitespace-nowrap shadow-lg shadow-red-900/40">
+                Cari Sekarang
+              </Link>
+            </motion.div>
+
+            {/* CTA buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex flex-wrap gap-3 mb-10">
+              <Link
+                href={session ? "/akun" : "/daftar"}
+                className="inline-flex items-center gap-2 bg-white text-[#0B1C3D] font-bold px-6 py-3 rounded-xl hover:bg-blue-50 transition shadow-xl text-sm">
+                {session ? "Buka Akun Saya" : "Daftar Gratis Sekarang"}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 border-2 border-white/30 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/10 transition text-sm">
+                <Wrench className="w-4 h-4" />
+                Daftarkan Bengkel
+              </Link>
+            </motion.div>
+
+            {/* Trust indicators */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="flex flex-wrap items-center gap-5">
+              {[
+                { icon: Shield, text: "Bengkel Terverifikasi" },
+                { icon: Clock, text: "Booking 24/7" },
+                { icon: Star, text: "Rating Terpercaya" },
+              ].map((item) => (
+                <div
+                  key={item.text}
+                  className="flex items-center gap-2 text-blue-300 text-xs">
+                  <item.icon className="w-4 h-4 text-red-400" />
+                  {item.text}
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Right — Floating cards */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="hidden lg:block relative">
+            {/* Main image card */}
+            <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+              <Image
+                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"
+                alt="Mekanik profesional"
+                width={600}
+                height={450}
+                className="object-cover w-full h-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0B1C3D]/60 to-transparent" />
             </div>
-          ))}
-        </motion.div>
 
-        {/* Dual CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          {/* Customer CTA */}
-          <div className="flex flex-col items-center gap-1">
-            <Link
-              href={session ? "/akun" : "/daftar"}
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
-              {session ? "Buka Akun Saya" : "Daftar sebagai Customer"}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <span className="text-xs text-gray-400">
-              Gratis · Langsung bisa booking
-            </span>
-          </div>
+            {/* Floating card 1 — Status servis */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+              className="absolute -left-8 top-8 bg-white rounded-2xl p-4 shadow-2xl min-w-52">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Status Servis</p>
+                  <p className="text-sm font-bold text-gray-900">
+                    Selesai Dikerjakan
+                  </p>
+                </div>
+              </div>
+              <div className="mt-2 bg-green-50 rounded-lg px-3 py-1.5">
+                <p className="text-xs text-green-700 font-medium">
+                  Honda Vario — B 1234 XY
+                </p>
+              </div>
+            </motion.div>
 
-          <div className="text-gray-300 text-sm hidden sm:block">atau</div>
+            {/* Floating card 2 — Booking */}
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{
+                repeat: Infinity,
+                duration: 3.5,
+                ease: "easeInOut",
+                delay: 0.5,
+              }}
+              className="absolute -right-6 bottom-8 bg-[#132447] border border-white/10 rounded-2xl p-4 shadow-2xl min-w-48">
+              <div className="flex items-center gap-2 mb-2">
+                <Car className="w-4 h-4 text-red-400" />
+                <p className="text-xs text-blue-300 font-medium">
+                  Booking Baru
+                </p>
+              </div>
+              <p className="text-white font-bold text-sm">Tune Up Motor</p>
+              <p className="text-blue-400 text-xs mt-0.5">Besok, 09:00 WIB</p>
+              <div className="mt-2 flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <p className="text-green-400 text-xs">Dikonfirmasi</p>
+              </div>
+            </motion.div>
 
-          {/* Operator CTA */}
-          <div className="flex flex-col items-center gap-1">
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 border-2 border-gray-300 hover:border-blue-400 text-gray-700 font-semibold px-6 py-3 rounded-xl transition text-sm">
-              <Wrench className="w-4 h-4" />
-              Daftarkan Bengkel Saya
-            </Link>
-            <span className="text-xs text-gray-400">
-              Mulai gratis · Kelola servis lebih mudah
-            </span>
-          </div>
-        </motion.div>
+            {/* Floating card 3 — Stats */}
+            <motion.div
+              animate={{ y: [0, -6, 0] }}
+              transition={{
+                repeat: Infinity,
+                duration: 4,
+                ease: "easeInOut",
+                delay: 1,
+              }}
+              className="absolute right-8 top-4 bg-red-600 rounded-2xl px-4 py-3 shadow-xl shadow-red-900/40">
+              <p className="text-white/80 text-xs">Bengkel Terdaftar</p>
+              <p className="text-white font-extrabold text-2xl">500+</p>
+            </motion.div>
+          </motion.div>
+        </div>
 
-        {/* Stats */}
+        {/* Bottom stats bar */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
-          className="grid grid-cols-3 gap-6 max-w-lg mx-auto mt-16 pt-10 border-t border-gray-200">
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 pt-10 border-t border-white/10">
           {[
-            { value: "2 tipe", label: "Booking & Walk-in" },
-            { value: "Real-time", label: "Status servis" },
-            { value: "Digital", label: "Invoice & pembayaran" },
+            { value: "500+", label: "Bengkel Terdaftar" },
+            { value: "10.000+", label: "Servis Selesai" },
+            { value: "4.8/5", label: "Rating Rata-rata" },
+            { value: "24/7", label: "Booking Online" },
           ].map((stat) => (
-            <div key={stat.label}>
-              <div className="text-xl font-bold text-gray-900">
+            <div key={stat.label} className="text-center">
+              <div className="text-2xl md:text-3xl font-extrabold text-white">
                 {stat.value}
               </div>
-              <div className="text-xs text-gray-500 mt-0.5">{stat.label}</div>
+              <div className="text-blue-300 text-xs mt-1">{stat.label}</div>
             </div>
           ))}
         </motion.div>

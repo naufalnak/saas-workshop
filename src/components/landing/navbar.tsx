@@ -3,12 +3,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Wrench, Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Wrench, Menu, X, User, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import type { GlobalCustomerSession } from "@/lib/global-customer-auth";
 
-export default function Navbar() {
+interface Props {
+  session?: GlobalCustomerSession | null;
+}
+
+export default function Navbar({ session }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -17,9 +24,10 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { label: "Fitur", href: "#features" },
-    { label: "Manfaat", href: "#benefits" },
-    { label: "Preview", href: "#preview" },
+    { label: "Beranda", href: "#hero" },
+    { label: "Layanan", href: "#layanan" },
+    { label: "Cara Kerja", href: "#cara-kerja" },
+    { label: "Bengkel", href: "/bengkel" },
   ];
 
   return (
@@ -29,25 +37,32 @@ export default function Navbar() {
       transition={{ duration: 0.4 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm"
+          ? "bg-[#0B1C3D]/98 backdrop-blur-md shadow-lg shadow-black/20"
           : "bg-transparent"
       }`}>
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Wrench className="w-4 h-4 text-white" />
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-900/30">
+            <Wrench className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-gray-900">BengkelKu</span>
+          <div>
+            <span className="font-bold text-white text-lg leading-none block">
+              BengkelKu
+            </span>
+            <span className="text-blue-300 text-xs leading-none">
+              Platform Bengkel Indonesia
+            </span>
+          </div>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-gray-600 hover:text-gray-900 transition">
+              className="text-sm text-blue-200 hover:text-white transition font-medium">
               {link.label}
             </Link>
           ))}
@@ -55,31 +70,39 @@ export default function Navbar() {
 
         {/* CTA buttons */}
         <div className="hidden md:flex items-center gap-3">
-          {/* ✅ Tambah link Cari Bengkel */}
+          {session ? (
+            <Link
+              href="/akun"
+              className="flex items-center gap-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition">
+              <User className="w-4 h-4" />
+              {session.name.split(" ")[0]}
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/masuk"
+                className="text-sm font-medium text-blue-200 hover:text-white transition px-4 py-2">
+                Masuk
+              </Link>
+              <Link
+                href="/daftar"
+                className="text-sm font-semibold bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl transition shadow-lg shadow-red-900/30">
+                Daftar Gratis
+              </Link>
+            </>
+          )}
           <Link
-            href="/bengkel"
-            className="text-sm text-gray-600 hover:text-gray-900 transition">
-            Cari Bengkel
-          </Link>
-          <Link
-            href="/masuk"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900 transition">
-            Masuk
-          </Link>
-          <Link
-            href="/daftar"
-            className="text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
-            Daftar Gratis
+            href="/register"
+            className="text-sm font-medium border border-blue-400/30 text-blue-200 hover:border-blue-300 hover:text-white px-4 py-2.5 rounded-xl transition">
+            Daftar Bengkel
           </Link>
         </div>
 
         {/* Mobile menu button */}
-        <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? (
-            <X className="w-5 h-5 text-gray-700" />
-          ) : (
-            <Menu className="w-5 h-5 text-gray-700" />
-          )}
+        <button
+          className="md:hidden text-white"
+          onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
@@ -90,30 +113,31 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-b border-gray-200 px-6 pb-4">
+            className="md:hidden bg-[#0B1C3D] border-t border-white/10 px-6 pb-5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="block py-2.5 text-sm text-gray-700">
+                className="block py-3 text-sm text-blue-200 border-b border-white/5">
                 {link.label}
               </Link>
             ))}
-            <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-100">
-              {/* ✅ Tambah link Cari Bengkel */}
-              <Link href="/bengkel" className="text-sm py-2 text-gray-700">
-                Cari Bengkel
-              </Link>
+            <div className="flex flex-col gap-2 mt-4">
               <Link
                 href="/masuk"
-                className="text-sm font-medium text-center py-2 border border-gray-300 rounded-lg">
+                className="text-sm text-center py-2.5 border border-white/20 text-white rounded-xl">
                 Masuk
               </Link>
               <Link
                 href="/daftar"
-                className="text-sm font-medium text-center py-2 bg-blue-600 text-white rounded-lg">
+                className="text-sm text-center py-2.5 bg-red-600 text-white rounded-xl font-semibold">
                 Daftar Gratis
+              </Link>
+              <Link
+                href="/register"
+                className="text-sm text-center py-2.5 bg-white/10 text-white rounded-xl">
+                Daftar Bengkel
               </Link>
             </div>
           </motion.div>

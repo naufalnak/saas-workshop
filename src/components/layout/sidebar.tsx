@@ -10,6 +10,7 @@ import {
   Wrench,
   FileText,
   CalendarDays,
+  BarChart3,
   Settings,
   LogOut,
   ChevronRight,
@@ -19,11 +20,12 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/bookings", label: "Booking", icon: CalendarDays }, // ← TAMBAH
+  { href: "/bookings", label: "Booking", icon: CalendarDays },
   { href: "/customers", label: "Pelanggan", icon: Users },
   { href: "/vehicles", label: "Kendaraan", icon: Car },
   { href: "/services", label: "Servis", icon: Wrench },
   { href: "/invoices", label: "Invoice", icon: FileText },
+  { href: "/laporan", label: "Laporan", icon: BarChart3 }, // ← TAMBAH
   { href: "/settings", label: "Pengaturan", icon: Settings },
 ];
 

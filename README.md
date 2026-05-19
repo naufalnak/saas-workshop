@@ -363,12 +363,9 @@ GlobalCustomer    ← akun pelanggan global (lintas bengkel)
 - [x] Dummy data seeder
 - [x] Email verification saat register
 - [x] Notifikasi WhatsApp (via Fonnte/WA Gateway)
+- [x] Laporan keuangan — rekap pendapatan per bulan
 
 ### Direncanakan 🗓️
-
-#### 🥇 Tier 1 — Operasional & kepercayaan
-
-- [ ] Laporan keuangan — rekap pendapatan per bulan
 
 #### 🥈 Tier 2 — Nilai produk
 
@@ -406,7 +403,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
   <p>Dibuat dengan 😎🤙🎧 oleh <a href="https://github.com/naufalnak">Naufal Andresya</a></p>
   <p>
     <a href="https://saas-workshop-ruby.vercel.app/">Live Demo</a> ·
-    <a href="#">Report Bug</a> ·
-    <a href="#">Request Feature</a>
+    <a href="https://github.com/naufalnak/saas-workshop/issues/new?labels=bug">Report Bug</a> ·
+    <a href="https://github.com/naufalnak/saas-workshop/issues/new?labels=enhancement">Request Feature</a>
   </p>
 </div>

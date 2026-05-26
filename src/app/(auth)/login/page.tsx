@@ -42,12 +42,13 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      if (res.error === "EMAIL_NOT_VERIFIED") {
-        setUnverified(true);
-        setError("Email kamu belum diverifikasi.");
-      } else {
-        setError("Email atau password salah");
-      }
+      setError("Email atau password salah");
+    } else {
+      router.refresh();
+      // Tunggu refresh selesai dulu baru redirect
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
     }
   };
 

@@ -48,7 +48,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!passwordMatch) return null;
 
         // ← TAMBAH cek verifikasi
-        if (!user.emailVerified) return null;
+        if (process.env.NODE_ENV === "production" && !user.emailVerified) {
+          return null;
+        }
 
         return {
           id: user.id,
@@ -61,5 +63,3 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 });
-
-export { auth as default } from "./auth";

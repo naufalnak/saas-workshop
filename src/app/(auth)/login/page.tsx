@@ -1,10 +1,8 @@
 // src/app/(auth)/login/page.tsx
-
 "use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,11 +17,9 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [unverified, setUnverified] = useState(false);
-
   const [error, setError] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -34,7 +30,6 @@ export default function LoginPage() {
 
   const onSubmit = async (data: FormData) => {
     setError("");
-    setUnverified(false);
     const res = await signIn("credentials", {
       email: data.email,
       password: data.password,
@@ -44,11 +39,8 @@ export default function LoginPage() {
     if (res?.error) {
       setError("Email atau password salah");
     } else {
-      router.refresh();
-      // Tunggu refresh selesai dulu baru redirect
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 100);
+      // Hard redirect — pastikan session terbaca di production
+      window.location.assign("/dashboard");
     }
   };
 
@@ -69,20 +61,10 @@ export default function LoginPage() {
         {/* Form */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Error message */}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
-                    {error}
-                    {unverified && (
-                      <Link
-                        href="/resend-verification"
-                        className="block mt-1 text-blue-600 hover:underline text-xs">
-                        Kirim ulang email verifikasi →
-                      </Link>
-                    )}
-                  </div>
-                )}
+                {error}
               </div>
             )}
 
@@ -124,12 +106,12 @@ export default function LoginPage() {
                     <Eye className="w-4 h-4" />
                   )}
                 </button>
-                {errors.password && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.password.message}
-                  </p>
-                )}
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <button

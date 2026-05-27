@@ -39,19 +39,20 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#0B1C3D]/60 backdrop-blur-sm"
         onClick={onClose}
       />
       <div
         className={cn(
-          "relative bg-white rounded-2xl shadow-xl w-full",
+          "relative bg-white rounded-2xl shadow-2xl w-full border border-gray-200",
           sizes[size],
         )}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-base font-semibold text-gray-900">{title}</h2>
+        {/* Modal header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-2xl">
+          <h2 className="text-base font-bold text-[#0B1C3D]">{title}</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 transition">
             <X className="w-4 h-4 text-gray-500" />
           </button>
         </div>

@@ -25,7 +25,7 @@ const navItems = [
   { href: "/vehicles", label: "Kendaraan", icon: Car },
   { href: "/services", label: "Servis", icon: Wrench },
   { href: "/invoices", label: "Invoice", icon: FileText },
-  { href: "/laporan", label: "Laporan", icon: BarChart3 }, // ← TAMBAH
+  { href: "/laporan", label: "Laporan", icon: BarChart3 },
   { href: "/settings", label: "Pengaturan", icon: Settings },
 ];
 
@@ -33,13 +33,18 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-60 min-h-screen bg-white border-r border-gray-200 flex flex-col">
+    <aside className="w-60 min-h-screen bg-[#0B1C3D] flex flex-col">
       {/* Logo */}
-      <div className="h-16 flex items-center gap-2.5 px-5 border-b border-gray-200">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+      <div className="h-16 flex items-center gap-3 px-5 border-b border-white/10">
+        <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-red-900/30">
           <Wrench className="w-4 h-4 text-white" />
         </div>
-        <span className="font-semibold text-gray-900">BengkelKu</span>
+        <div>
+          <span className="font-bold text-white text-sm block leading-none">
+            BengkelKu
+          </span>
+          <span className="text-blue-400 text-xs leading-none">Dashboard</span>
+        </div>
       </div>
 
       {/* Nav */}
@@ -53,22 +58,22 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group",
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group",
                 isActive
-                  ? "bg-blue-50 text-blue-700"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                  ? "bg-red-600 text-white shadow-lg shadow-red-900/30"
+                  : "text-blue-200 hover:bg-white/10 hover:text-white",
               )}>
               <item.icon
                 className={cn(
-                  "w-4 h-4",
+                  "w-4 h-4 flex-shrink-0",
                   isActive
-                    ? "text-blue-600"
-                    : "text-gray-400 group-hover:text-gray-600",
+                    ? "text-white"
+                    : "text-blue-300 group-hover:text-white",
                 )}
               />
               <span className="flex-1">{item.label}</span>
               {isActive && (
-                <ChevronRight className="w-3.5 h-3.5 text-blue-400" />
+                <ChevronRight className="w-3.5 h-3.5 text-red-200" />
               )}
             </Link>
           );
@@ -76,11 +81,11 @@ export default function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="px-3 pb-4">
+      <div className="px-3 pb-4 border-t border-white/10 pt-3">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors group">
-          <LogOut className="w-4 h-4 text-gray-400 group-hover:text-red-500" />
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-blue-200 hover:bg-red-600/20 hover:text-red-300 transition-all group">
+          <LogOut className="w-4 h-4 text-blue-300 group-hover:text-red-300" />
           Keluar
         </button>
       </div>

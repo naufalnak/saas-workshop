@@ -49,7 +49,8 @@ export function CustomersClient({ initialCustomers }: Props) {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition">
+          // Ganti tombol Tambah Pelanggan
+          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition">
           <Plus className="w-4 h-4" /> Tambah Pelanggan
         </button>
       </div>

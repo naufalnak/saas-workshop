@@ -239,7 +239,7 @@ export function SettingsClient({ workshop }: Props) {
                   onClick={() => toggleSpecialty(s)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
                     selectedSpecialties.includes(s)
-                      ? "bg-blue-600 text-white border-blue-600"
+                      ? "bg-red-600 text-white bg-red-600"
                       : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"
                   }`}>
                   {s}
@@ -251,7 +251,7 @@ export function SettingsClient({ workshop }: Props) {
           <button
             type="submit"
             disabled={isPending}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition disabled:opacity-70">
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition disabled:opacity-70">
             {isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...
@@ -272,7 +272,7 @@ export function SettingsClient({ workshop }: Props) {
           </h3>
           <button
             onClick={() => setShowAddService(true)}
-            className="flex items-center gap-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition">
+            className="flex items-center gap-1.5 text-xs font-medium bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition">
             <Plus className="w-3.5 h-3.5" /> Tambah Layanan
           </button>
         </div>

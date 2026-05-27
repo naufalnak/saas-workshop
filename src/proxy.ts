@@ -2,8 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-export async function proxy(req: NextRequest) {
-  // ✅ ganti nama fungsi
+export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
   const isOperatorRoute =

@@ -13,6 +13,7 @@ import {
   Tag,
   Wrench,
   Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import {
@@ -44,6 +45,7 @@ export function SettingsClient({ workshop }: Props) {
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
   const [showAddService, setShowAddService] = useState(false);
+  const [saved, setSaved] = useState(false); // ← TAMBAH
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>(
     workshop.specialties ?? [],
   );
@@ -75,6 +77,8 @@ export function SettingsClient({ workshop }: Props) {
     formData.set("isPublished", isPublished ? "true" : "false");
     startTransition(async () => {
       await updateWorkshopProfile(formData);
+      setSaved(true); // ← TAMBAH
+      setTimeout(() => setSaved(false), 3000); // ← TAMBAH
     });
   };
 
@@ -99,6 +103,16 @@ export function SettingsClient({ workshop }: Props) {
 
   return (
     <div className="flex-1 p-6 max-w-3xl space-y-6">
+      {/* Toast notification */}
+      {saved && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#0B1C3D] text-white px-5 py-3.5 rounded-2xl shadow-2xl">
+          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="text-sm font-medium">Profil berhasil disimpan!</span>
+        </div>
+      )}
+
       {/* Publish toggle */}
       <div
         className={`rounded-xl border p-4 flex items-center justify-between ${
@@ -108,17 +122,13 @@ export function SettingsClient({ workshop }: Props) {
         }`}>
         <div>
           <p
-            className={`text-sm font-semibold ${
-              isPublished ? "text-green-800" : "text-amber-800"
-            }`}>
+            className={`text-sm font-semibold ${isPublished ? "text-green-800" : "text-amber-800"}`}>
             {isPublished
               ? "✅ Bengkel kamu tampil di marketplace"
               : "⚠️ Bengkel kamu belum dipublikasikan"}
           </p>
           <p
-            className={`text-xs mt-0.5 ${
-              isPublished ? "text-green-600" : "text-amber-600"
-            }`}>
+            className={`text-xs mt-0.5 ${isPublished ? "text-green-600" : "text-amber-600"}`}>
             {isPublished
               ? "Pelanggan bisa menemukan dan memesan servis ke bengkel kamu"
               : "Aktifkan agar bengkel kamu bisa ditemukan pelanggan"}
@@ -239,8 +249,8 @@ export function SettingsClient({ workshop }: Props) {
                   onClick={() => toggleSpecialty(s)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
                     selectedSpecialties.includes(s)
-                      ? "bg-red-600 text-white bg-red-600"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"
+                      ? "bg-red-600 text-white border-red-600"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-red-400"
                   }`}>
                   {s}
                 </button>
@@ -346,7 +356,6 @@ export function SettingsClient({ workshop }: Props) {
             )}
             {copied ? "Disalin!" : "Salin"}
           </button>
-
           <a
             href={`/bengkel/${workshop.slug}`}
             target="_blank"
@@ -417,7 +426,7 @@ export function SettingsClient({ workshop }: Props) {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 disabled:opacity-70">
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 disabled:opacity-70">
             {isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...

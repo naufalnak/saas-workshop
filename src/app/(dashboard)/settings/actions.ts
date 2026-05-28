@@ -3,7 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const workshopSchema = z.object({
@@ -14,7 +14,7 @@ const workshopSchema = z.object({
   description: z.string().optional(),
   openHour: z.string().optional(),
   closeHour: z.string().optional(),
-  specialties: z.string().optional(), // comma separated
+  specialties: z.string().optional(),
   isPublished: z.boolean().default(false),
 });
 
@@ -61,7 +61,6 @@ export async function updateWorkshopProfile(formData: FormData) {
     data: { ...data, specialties },
   });
 
-  revalidateTag("workshops", "revalidate");
   revalidatePath("/settings");
   revalidatePath("/bengkel");
 }

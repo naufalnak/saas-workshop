@@ -209,7 +209,7 @@ export default async function DashboardPage() {
                 label: "Laporan Keuangan",
                 href: "/laporan",
                 icon: TrendingUp,
-                color: "bg-[#0B1C3D]",
+                color: "bg-[var(--navy)]",
               },
             ].map((action) => (
               <Link

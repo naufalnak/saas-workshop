@@ -50,7 +50,7 @@ export default function Features() {
   return (
     <section
       id="layanan"
-      className="py-24 bg-[#0B1C3D] relative overflow-hidden">
+      className="py-24 bg-[var(--navy)] relative overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-5">
         <div

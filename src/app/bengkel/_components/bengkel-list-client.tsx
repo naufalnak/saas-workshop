@@ -3,16 +3,8 @@
 
 import { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
-import {
-  Search,
-  MapPin,
-  Clock,
-  Wrench,
-  ChevronRight,
-  Star,
-} from "lucide-react";
+import { Search, MapPin, Clock, Wrench, ChevronRight } from "lucide-react";
 
-// ✅ Definisi type manual (tidak import dari actions)
 type Workshop = {
   id: string;
   slug: string;
@@ -46,7 +38,6 @@ export function BengkelListClient({ initialWorkshops }: Props) {
   const [activeSpecialty, setActiveSpecialty] = useState("Semua");
   const [isPending, startTransition] = useTransition();
 
-  // ✅ Ganti dari getPublishedWorkshops() ke fetch API route
   const load = (q?: string, specialty?: string) => {
     startTransition(async () => {
       const params = new URLSearchParams();
@@ -68,44 +59,44 @@ export function BengkelListClient({ initialWorkshops }: Props) {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Cari Bengkel</h1>
         <p className="text-gray-500 text-sm">
           {workshops.length} bengkel tersedia di platform kami
         </p>
       </div>
 
-      {/* Search */}
+      {/* Search Input */}
       <div className="relative mb-4">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-red-700" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cari nama bengkel atau kota..."
-          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white shadow-sm"
+          className="w-full pl-11 pr-4 py-3 border border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 placeholder-red-700/70 font-medium text-slate-800 bg-white"
         />
       </div>
 
-      {/* Specialty filter */}
+      {/* Specialty Filter Buttons */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
         {SPECIALTIES.map((s) => (
           <button
             key={s}
             onClick={() => setActiveSpecialty(s)}
-            className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium border transition ${
+            className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               activeSpecialty === s
-                ? "bg-blue-600 text-white border-blue-600"
-                : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"
+                ? "bg-[var(--navy)] text-white bg-[var(--navy)]"
+                : "bg-white text-gray-800 border-gray-400 hover:border-gray-600"
             }`}>
             {s}
           </button>
         ))}
       </div>
 
-      {/* Results */}
+      {/* Results Section */}
       {isPending ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3].map((i) => (
             <div
               key={i}
               className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
@@ -133,82 +124,82 @@ export function BengkelListClient({ initialWorkshops }: Props) {
           {!search && activeSpecialty === "Semua" && (
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-blue-700 transition">
+              className="inline-flex items-center gap-2 bg-[var(--navy-light)] text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-slate-800 transition">
               <Wrench className="w-4 h-4" />
               Daftarkan Bengkel Saya
             </Link>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {workshops.map((w) => (
             <Link
               key={w.id}
               href={`/bengkel/${w.slug}`}
-              className="group bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 hover:shadow-md transition-all">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Wrench className="w-5 h-5 text-blue-600" />
+              className="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                {/* Card Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[var(--navy-mid)] rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Wrench className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[15px] text-gray-900 group-hover:text-slate-700 transition">
+                        {w.name}
+                      </h3>
+                      {w.city && (
+                        <div className="flex items-center gap-1 text-xs text-gray-500 font-medium mt-0.5">
+                          <MapPin className="w-3 h-3 text-gray-400" />
+                          {w.city}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition">
-                      {w.name}
-                    </h3>
-                    {w.city && (
-                      <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
-                        <MapPin className="w-3 h-3" />
-                        {w.city}
-                      </div>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-0.5 transition flex-shrink-0 mt-1" />
+                </div>
+
+                {/* Card Description */}
+                {w.description && (
+                  <p className="text-xs text-gray-700 mb-4 line-clamp-2 leading-relaxed">
+                    {w.description}
+                  </p>
+                )}
+
+                {/* Card Badges / Specialties */}
+                {w.specialties.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {w.specialties.slice(0, 4).map((s) => (
+                      <span
+                        key={s}
+                        className="text-xs font-medium text-slate-800 bg-white border border-gray-400 px-3 py-0.5 rounded-full">
+                        {s}
+                      </span>
+                    ))}
+                    {w.specialties.length > 4 && (
+                      <span className="text-xs text-gray-400 self-center">
+                        +{w.specialties.length - 4}
+                      </span>
                     )}
                   </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition flex-shrink-0 mt-1" />
+                )}
               </div>
 
-              {/* Description */}
-              {w.description && (
-                <p className="text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">
-                  {w.description}
-                </p>
-              )}
-
-              {/* Specialties */}
-              {w.specialties.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {w.specialties.slice(0, 3).map((s) => (
-                    <span
-                      key={s}
-                      className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
-                      {s}
-                    </span>
-                  ))}
-                  {w.specialties.length > 3 && (
-                    <span className="text-xs text-gray-400">
-                      +{w.specialties.length - 3}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Footer */}
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-3">
+              {/* Card Footer */}
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
+                <div className="flex items-center gap-4">
                   {w.openHour && w.closeHour && (
-                    <div className="flex items-center gap-1 text-xs text-gray-400">
-                      <Clock className="w-3 h-3" />
-                      {w.openHour} – {w.closeHour}
+                    <div className="flex items-center gap-1.5 text-xs text-slate-800 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-gray-500" />
+                      {w.openHour} - {w.closeHour}
                     </div>
                   )}
-                  {w.workshopServices.length > 0 && (
-                    <span className="text-xs text-gray-400">
-                      {w.workshopServices.length} layanan
-                    </span>
-                  )}
+                  <span className="text-xs text-slate-800 font-medium">
+                    {w.workshopServices.length || 0} layanan
+                  </span>
                 </div>
-                <span className="text-xs font-medium text-blue-600">
-                  Lihat Detail →
+                <span className="text-xs font-bold text-red-700 hover:underline">
+                  Lihat Detail &rarr;
                 </span>
               </div>
             </Link>

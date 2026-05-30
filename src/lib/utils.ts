@@ -53,7 +53,7 @@ export const btnPrimary =
   "bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition shadow-sm disabled:opacity-70 flex items-center justify-center gap-2";
 
 export const btnSecondary =
-  "bg-[#0B1C3D] hover:bg-[#132447] text-white font-semibold rounded-xl transition disabled:opacity-70 flex items-center justify-center gap-2";
+  "bg-[var(--navy)] hover:bg-[var(--navy-light)] text-white font-semibold rounded-xl transition disabled:opacity-70 flex items-center justify-center gap-2";
 
 export const btnOutline =
   "border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-xl transition flex items-center justify-center gap-2";

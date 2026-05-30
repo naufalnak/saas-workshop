@@ -21,7 +21,7 @@ export default async function Header({ title, subtitle }: HeaderProps) {
           <Bell className="w-4 h-4 text-gray-500" />
         </button>
         <div className="flex items-center gap-2.5 pl-3 border-l border-gray-200">
-          <div className="w-9 h-9 rounded-xl bg-[#0B1C3D] flex items-center justify-center text-white text-sm font-bold shadow-md">
+          <div className="w-9 h-9 rounded-xl bg-[var(--navy)] flex items-center justify-center text-white text-sm font-bold shadow-md">
             {session?.user?.name?.[0]?.toUpperCase() ?? "U"}
           </div>
           <div className="hidden sm:block">

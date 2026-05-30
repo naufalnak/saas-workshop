@@ -8,7 +8,7 @@ import { ArrowRight, Wrench, Search, Phone } from "lucide-react";
 
 export default function CTA() {
   return (
-    <section className="py-24 bg-[#0B1C3D] relative overflow-hidden">
+    <section className="py-24 bg-[var(--navy)] relative overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
@@ -66,7 +66,7 @@ export default function CTA() {
             <div className="space-y-3">
               <Link
                 href="/daftar"
-                className="flex items-center justify-center gap-2 bg-[#0B1C3D] text-white font-bold py-3 rounded-xl text-sm hover:bg-[#132447] transition">
+                className="flex items-center justify-center gap-2 bg-[var(--navy)] text-white font-bold py-3 rounded-xl text-sm hover:bg-[var(--navy-light)] transition">
                 Daftar Gratis <ArrowRight className="w-4 h-4" />
               </Link>
               <Link

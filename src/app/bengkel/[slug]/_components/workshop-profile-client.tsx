@@ -53,8 +53,8 @@ export function WorkshopProfileClient({ workshop, session }: Props) {
           {/* Header card */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                <Wrench className="w-8 h-8 text-blue-600" />
+              <div className="w-16 h-16 bg-[var(--navy-mid)] rounded-2xl flex items-center justify-center flex-shrink-0">
+                <Wrench className="w-8 h-8 text-white" />
               </div>
               <div className="flex-1">
                 <h1 className="text-xl font-bold text-gray-900">
@@ -103,7 +103,7 @@ export function WorkshopProfileClient({ workshop, session }: Props) {
                 {workshop.specialties.map((s) => (
                   <span
                     key={s}
-                    className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
+                    className="text-xs bg-blue-50 text-[var(--navy)] px-3 py-1 rounded-full font-medium">
                     {s}
                   </span>
                 ))}
@@ -142,7 +142,7 @@ export function WorkshopProfileClient({ workshop, session }: Props) {
                     </div>
                     {(svc.priceMin || svc.priceMax) && (
                       <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-semibold text-blue-600">
+                        <p className="text-sm font-semibold text-[var(--navy)]">
                           {svc.priceMin && svc.priceMax
                             ? `${formatCurrency(svc.priceMin)} – ${formatCurrency(svc.priceMax)}`
                             : svc.priceMin
@@ -172,8 +172,8 @@ export function WorkshopProfileClient({ workshop, session }: Props) {
             {/* Booking */}
             <button
               onClick={() => handleOrder("BOOKING")}
-              className="w-full flex items-center gap-3 p-4 border-2 border-blue-500 bg-blue-50 rounded-xl hover:bg-blue-100 transition mb-3 text-left group">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+              className="w-full flex items-center gap-3 p-4 border-2 border border-[var(--navy-mid)] bg-blue-50 rounded-xl hover:bg-blue-100 transition mb-3 text-left group">
+              <div className="w-10 h-10 bg-[var(--navy-mid)] rounded-xl flex items-center justify-center flex-shrink-0">
                 <CalendarDays className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">

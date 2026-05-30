@@ -33,7 +33,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-60 min-h-screen bg-[#0B1C3D] flex flex-col">
+    <aside className="w-60 min-h-screen bg-[var(--navy)] flex flex-col">
       {/* Logo */}
       <div className="h-16 flex items-center gap-3 px-5 border-b border-white/10">
         <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-red-900/30">

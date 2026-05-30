@@ -55,7 +55,7 @@ export default function FeaturedWorkshops({ workshops }: Props) {
                 href={`/bengkel/${w.slug}`}
                 className="group block bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-[#0B1C3D]/20 transition-all">
                 {/* Card header — navy background */}
-                <div className="bg-[#0B1C3D] px-5 py-6 relative overflow-hidden">
+                <div className="bg-[var(--navy)] px-5 py-6 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-red-600/10 rounded-full -translate-y-1/2 translate-x-1/2" />
                   <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center mb-3 shadow-lg shadow-red-900/30">
                     <Wrench className="w-6 h-6 text-white" />

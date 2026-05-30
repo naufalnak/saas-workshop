@@ -59,9 +59,9 @@ export function OrderFormClient({ workshop, session, orderType }: Props) {
 
       {/* Type badge */}
       <div
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 ${
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 ml-3 ${
           isBooking
-            ? "bg-blue-100 text-blue-700"
+            ? " bg-[var(--navy)] text-white"
             : "bg-green-100 text-green-700"
         }`}>
         {isBooking ? (
@@ -186,7 +186,7 @@ export function OrderFormClient({ workshop, session, orderType }: Props) {
                 disabled={isPending}
                 className={`w-full font-medium py-3 rounded-xl text-sm transition flex items-center justify-center gap-2 disabled:opacity-70 ${
                   isBooking
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    ? "bg-[var(--navy-mid)] hover:bg-[var(--navy-lighter)] text-white"
                     : "bg-green-600 hover:bg-green-700 text-white"
                 }`}>
                 {isPending ? (
@@ -244,13 +244,13 @@ export function OrderFormClient({ workshop, session, orderType }: Props) {
             }`}>
             <p
               className={`text-xs font-medium mb-1 ${
-                isBooking ? "text-blue-800" : "text-green-800"
+                isBooking ? "text-[var(--navy-mid)]" : "text-green-800"
               }`}>
               {isBooking ? "📅 Booking Jadwal" : "⚡ Pesan Langsung"}
             </p>
             <p
               className={`text-xs ${
-                isBooking ? "text-blue-600" : "text-green-600"
+                isBooking ? "text-[var(--navy-light)]" : "text-green-600"
               }`}>
               {isBooking
                 ? "Bengkel akan konfirmasi jadwal dalam 1x24 jam"

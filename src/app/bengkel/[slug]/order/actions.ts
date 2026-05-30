@@ -75,7 +75,7 @@ export async function getMyOrders() {
   const session = await getGlobalCustomerSession();
   if (!session) redirect("/masuk");
 
-  return prisma.order.findMany({
+  const orders = await prisma.order.findMany({
     where: { globalCustomerId: session.id },
     include: {
       workshop: { select: { id: true, name: true, city: true, slug: true } },
@@ -93,6 +93,21 @@ export async function getMyOrders() {
     },
     orderBy: { createdAt: "desc" },
   });
+
+  return orders.map((order) => ({
+    ...order,
+    service: order.service
+      ? {
+          ...order.service,
+          invoice: order.service.invoice
+            ? {
+                ...order.service.invoice,
+                total: order.service.invoice.total.toNumber(),
+              }
+            : null,
+        }
+      : null,
+  }));
 }
 
 export async function getOrderById(id: string) {
@@ -124,5 +139,32 @@ export async function getOrderById(id: string) {
     },
   });
 
-  return order;
+  if (!order) return null;
+
+  return {
+    ...order,
+    service: order.service
+      ? {
+          ...order.service,
+          serviceItems: order.service.serviceItems.map((item) => ({
+            ...item,
+            unitPrice: item.unitPrice.toNumber(),
+            total: item.total.toNumber(),
+          })),
+          invoice: order.service.invoice
+            ? {
+                ...order.service.invoice,
+                subtotal: order.service.invoice.subtotal.toNumber(),
+                tax: order.service.invoice.tax.toNumber(),
+                discount: order.service.invoice.discount.toNumber(),
+                total: order.service.invoice.total.toNumber(),
+                payments: order.service.invoice.payments.map((payment) => ({
+                  ...payment,
+                  amount: payment.amount.toNumber(),
+                })),
+              }
+            : null,
+        }
+      : null,
+  };
 }

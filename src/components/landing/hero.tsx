@@ -24,7 +24,7 @@ export default function Hero({ session }: Props) {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center overflow-hidden bg-[#0B1C3D]">
+      className="relative min-h-screen flex items-center overflow-hidden bg-[var(--navy)]">
       {/* Background image dengan overlay */}
       <div className="absolute inset-0">
         <Image
@@ -188,7 +188,7 @@ export default function Hero({ session }: Props) {
                 ease: "easeInOut",
                 delay: 0.5,
               }}
-              className="absolute -right-6 bottom-8 bg-[#132447] border border-white/10 rounded-2xl p-4 shadow-2xl min-w-48">
+              className="absolute -right-6 bottom-8 bg-[var(--navy)] border border-white/10 rounded-2xl p-4 shadow-2xl min-w-48">
               <div className="flex items-center gap-2 mb-2">
                 <Car className="w-4 h-4 text-red-400" />
                 <p className="text-xs text-blue-300 font-medium">

@@ -1,12 +1,33 @@
 @import "tailwindcss";
 
 :root {
+  --navy-dark: #060f20;
   --navy: #0b1c3d;
-  --navy-light: #132447;
   --navy-mid: #1a3260;
+  --navy-light: #132447;
+  --navy-lighter: #2a4a80;
+  --navy-lightest: #3d6ab0;
+
+  /* Red */
+  --red-dark: #991b1b;
   --red: #dc2626;
+  --red-mid: #e53535;
   --red-light: #ef4444;
+  --red-lighter: #f87171;
+  --red-lightest: #fca5a5;
 }
+
+/* bg-[var(--navy)] 
+bg-[var(--navy-light)] 
+bg-[var(--navy-mid)]
+
+border-[var(--navy)]
+border-[var(--navy-light)]
+border-[var(--navy-mid)]
+
+text-[var(--navy)]
+text-[var(--navy-light)]
+text-[var(--navy-mid)] */
 
 @theme inline {
   --color-background: var(--background);

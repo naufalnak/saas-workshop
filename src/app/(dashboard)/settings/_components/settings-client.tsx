@@ -105,7 +105,7 @@ export function SettingsClient({ workshop }: Props) {
     <div className="flex-1 p-6 max-w-3xl space-y-6">
       {/* Toast notification */}
       {saved && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#0B1C3D] text-white px-5 py-3.5 rounded-2xl shadow-2xl">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[var(--navy)] text-white px-5 py-3.5 rounded-2xl shadow-2xl">
           <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
             <CheckCircle2 className="w-3.5 h-3.5 text-white" />
           </div>

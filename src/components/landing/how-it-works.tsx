@@ -75,7 +75,7 @@ export default function HowItWorks() {
                 className="relative text-center">
                 {/* Step number circle */}
                 <div className="relative z-10 w-24 h-24 mx-auto mb-5">
-                  <div className="w-24 h-24 bg-[#0B1C3D] rounded-2xl flex items-center justify-center shadow-xl shadow-navy/20 rotate-3 group-hover:rotate-0 transition">
+                  <div className="w-24 h-24 bg-[var(--navy)] rounded-2xl flex items-center justify-center shadow-xl shadow-navy/20 rotate-3 group-hover:rotate-0 transition">
                     <step.icon className="w-10 h-10 text-white" />
                   </div>
                   <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white text-xs font-extrabold shadow-lg">
@@ -102,7 +102,7 @@ export default function HowItWorks() {
           className="text-center mt-12">
           <Link
             href="/bengkel"
-            className="inline-flex items-center gap-2 bg-[#0B1C3D] hover:bg-[#132447] text-white font-bold px-8 py-3.5 rounded-xl transition shadow-xl text-sm">
+            className="inline-flex items-center gap-2 bg-[var(--navy)] hover:bg-[var(--navy)] text-white font-bold px-8 py-3.5 rounded-xl transition shadow-xl text-sm">
             <Search className="w-4 h-4" /> Cari Bengkel Sekarang
             <ArrowRight className="w-4 h-4" />
           </Link>

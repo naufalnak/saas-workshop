@@ -12,6 +12,7 @@ export default async function proxy(req: NextRequest) {
     path.startsWith("/services") ||
     path.startsWith("/invoices") ||
     path.startsWith("/bookings") ||
+    path.startsWith("/laporan") || // ← fix: tambah /laporan
     path.startsWith("/settings");
 
   const isOperatorAuthRoute =

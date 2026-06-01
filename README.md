@@ -27,7 +27,7 @@
 
 ## Tentang Project
 
-BengkelKu adalah platform SaaS multi-tenant yang dirancang untuk dua sisi pengguna sekaligus **operator bengkel** yang ingin mengelola servis, invoice, dan pembayaran secara digital, dan **pelanggan** yang ingin menemukan bengkel terpercaya serta memesan servis secara online.
+BengkelKu adalah platform multi-tenant yang dirancang untuk dua sisi pengguna sekaligus **operator bengkel** yang ingin mengelola servis, invoice, dan pembayaran secara digital, dan **pelanggan** yang ingin menemukan bengkel terpercaya serta memesan servis secara online.
 
 ### Problem yang diselesaikan
 
@@ -233,18 +233,24 @@ RESEND_FROM_EMAIL="onboarding@resend.dev"
 
 # WhatsApp (Fonnte)
 FONNTE_API_TOKEN="your-fonnte-token"
+
+# Rate Limiting (Upstash Redis)
+UPSTASH_REDIS_REST_URL="https://xxx.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="your-token"
 ```
 
-| Variable              | Keterangan                                                 | Contoh                                                                                         |
-| --------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`        | Connection string Supabase (transaction pooler, port 6543) | `postgresql://postgres.xxx:pass@aws-0-region.pooler.supabase.com:6543/postgres?pgbouncer=true` |
-| `DIRECT_URL`          | Connection string Supabase (direct, port 5432)             | `postgresql://postgres.xxx:pass@aws-0-region.pooler.supabase.com:5432/postgres`                |
-| `NEXTAUTH_SECRET`     | Secret untuk NextAuth JWT, minimal 32 karakter             | Generate: `openssl rand -base64 32`                                                            |
-| `NEXTAUTH_URL`        | Base URL aplikasi                                          | `http://localhost:3000` (dev) / `https://domain.com` (prod)                                    |
-| `NEXT_PUBLIC_APP_URL` | Base URL publik aplikasi                                   | `http://localhost:3000` (dev) / `https://domain.com` (prod)                                    |
-| `RESEND_API_KEY`      | API key dari Resend untuk kirim email                      | `re_xxx...`                                                                                    |
-| `RESEND_FROM_EMAIL`   | Alamat pengirim email                                      | `onboarding@resend.dev` (testing)                                                              |
-| `FONNTE_API_TOKEN`    | Token API Fonnte untuk kirim WhatsApp                      | `your-token`                                                                                   |
+| Variable                   | Keterangan                                                 | Contoh                                                                                         |
+| -------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`             | Connection string Supabase (transaction pooler, port 6543) | `postgresql://postgres.xxx:pass@aws-0-region.pooler.supabase.com:6543/postgres?pgbouncer=true` |
+| `DIRECT_URL`               | Connection string Supabase (direct, port 5432)             | `postgresql://postgres.xxx:pass@aws-0-region.pooler.supabase.com:5432/postgres`                |
+| `NEXTAUTH_SECRET`          | Secret untuk NextAuth JWT, minimal 32 karakter             | Generate: `openssl rand -base64 32`                                                            |
+| `NEXTAUTH_URL`             | Base URL aplikasi                                          | `http://localhost:3000` (dev) / `https://domain.com` (prod)                                    |
+| `NEXT_PUBLIC_APP_URL`      | Base URL publik aplikasi                                   | `http://localhost:3000` (dev) / `https://domain.com` (prod)                                    |
+| `RESEND_API_KEY`           | API key dari Resend untuk kirim email                      | `re_xxx...`                                                                                    |
+| `RESEND_FROM_EMAIL`        | Alamat pengirim email                                      | `onboarding@resend.dev` (testing)                                                              |
+| `FONNTE_API_TOKEN`         | Token API Fonnte untuk kirim WhatsApp                      | `your-token`                                                                                   |
+| `UPSTASH_REDIS_REST_URL`   | REST URL dari Upstash Redis (untuk rate limiting)          | `https://xxx.upstash.io`                                                                       |
+| `UPSTASH_REDIS_REST_TOKEN` | Token autentikasi Upstash Redis                            | `your-token`                                                                                   |
 
 ---
 
@@ -320,7 +326,7 @@ bengkelku/
 │   │   └── next-auth.d.ts     # NextAuth type extensions
 │   │
 │   ├── env.ts                 # Env validation (@t3-oss)
-│   └── middleware.ts          # Route protection
+│   └── proxy.ts               # Route protection
 │
 ├── .env.example
 ├── next.config.mjs
@@ -368,6 +374,9 @@ GlobalCustomer    ← akun pelanggan global (lintas bengkel)
 - [x] Email verification saat register
 - [x] Notifikasi WhatsApp (via Fonnte/WA Gateway)
 - [x] Laporan keuangan — rekap pendapatan per bulan
+- [x] Database indexes untuk performa query multi-tenant
+- [x] HTTP security headers (CSP, HSTS, X-Frame-Options)
+- [x] Server-side pagination & search di laporan keuangan
 
 ### Direncanakan 🗓️
 

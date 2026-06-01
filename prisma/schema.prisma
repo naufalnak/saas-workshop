@@ -57,16 +57,9 @@ enum PaymentMethod {
 
 // ─── MODELS ──────────────────────────────────────────────
 
-model RateLimit {
-  id        String   @id @default(cuid())
-  ip        String
-  endpoint  String
-  attempts  Int      @default(1)
-  resetAt   DateTime
+// RateLimit sudah tidak dipakai (pindah ke Redis)
+// Tabel ini bisa di-drop via migration terpisah
 
-  @@unique([ip, endpoint])
-  @@map("rate_limits")
-}
 model BookingRequest {
   id            String        @id @default(uuid())
   complaint     String
@@ -82,7 +75,10 @@ model BookingRequest {
   workshop  Workshop  @relation(fields: [workshopId], references: [id])
   customer  Customer  @relation(fields: [customerId], references: [id])
   vehicle   Vehicle?  @relation(fields: [vehicleId], references: [id])
-  service   Service?                                                       // ← no fields/references here
+  service   Service?
+
+  @@index([workshopId])
+  @@index([customerId])
 }
 
 model Workshop {
@@ -93,7 +89,6 @@ model Workshop {
   city        String?
   logoUrl     String?
   slug        String?  @unique
-  // ↓ TAMBAH field baru ini
   description String?
   openHour    String?
   closeHour   String?
@@ -109,8 +104,11 @@ model Workshop {
   services         Service[]
   invoices         Invoice[]
   payments         Payment[]
-  workshopServices WorkshopService[]  // ← TAMBAH
-  orders           Order[]            // ← TAMBAH
+  workshopServices WorkshopService[]
+  orders           Order[]
+
+  // Index untuk query publik (filter isPublished)
+  @@index([isPublished])
 }
 
 model WorkshopService {
@@ -124,20 +122,22 @@ model WorkshopService {
   createdAt   DateTime @default(now())
 
   workshop    Workshop @relation(fields: [workshopId], references: [id])
+
+  @@index([workshopId])
 }
 
 model GlobalCustomer {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  phone     String?
-  emailVerified   Boolean  @default(false)
+  id              String    @id @default(uuid())
+  name            String
+  email           String    @unique
+  password        String
+  phone           String?
+  emailVerified   Boolean   @default(false)
   verifyToken     String?
   verifyTokenExp  DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
   orders    Order[]
 }
 
@@ -162,23 +162,29 @@ model Order {
   globalCustomer  GlobalCustomer? @relation(fields: [globalCustomerId], references: [id])
   vehicle         Vehicle?        @relation(fields: [vehicleId], references: [id])
   service         Service?        @relation(fields: [serviceId], references: [id])
+
+  @@index([workshopId])
+  @@index([workshopId, status]) // filter by status di dashboard bookings
+  @@index([globalCustomerId])   // lookup order by customer
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  password   String
-  role       UserRole @default(MECHANIC)
-  workshopId String
-  emailVerified   Boolean  @default(false)
+  id              String    @id @default(uuid())
+  name            String
+  email           String    @unique
+  password        String
+  role            UserRole  @default(MECHANIC)
+  workshopId      String
+  emailVerified   Boolean   @default(false)
   verifyToken     String?
   verifyTokenExp  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   workshop   Workshop  @relation(fields: [workshopId], references: [id])
   services   Service[]
+
+  @@index([workshopId]) // getMechanicsForSelect filter by workshopId
 }
 
 model Customer {
@@ -194,6 +200,9 @@ model Customer {
   workshop        Workshop         @relation(fields: [workshopId], references: [id])
   vehicles        Vehicle[]
   bookingRequests BookingRequest[]
+
+  @@index([workshopId])
+  @@index([workshopId, email]) // lookup customer by email saat booking
 }
 
 model Vehicle {
@@ -209,11 +218,14 @@ model Vehicle {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  workshop    Workshop  @relation(fields: [workshopId], references: [id])
-  customer    Customer  @relation(fields: [customerId], references: [id])
-  services    Service[]
+  workshop        Workshop         @relation(fields: [workshopId], references: [id])
+  customer        Customer         @relation(fields: [customerId], references: [id])
+  services        Service[]
   bookingRequests BookingRequest[]
-  orders      Order[]   // ← TAMBAH
+  orders          Order[]
+
+  @@index([workshopId])
+  @@index([customerId]) // load vehicles by customer
 }
 
 model Service {
@@ -226,37 +238,44 @@ model Service {
   workshopId       String
   vehicleId        String
   mechanicId       String?
-  bookingRequestId String?       @unique                                   // ← FK added
+  bookingRequestId String?       @unique
   startDate        DateTime      @default(now())
   endDate          DateTime?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  workshop       Workshop       @relation(fields: [workshopId], references: [id])
-  vehicle        Vehicle        @relation(fields: [vehicleId], references: [id])
-  mechanic       User?          @relation(fields: [mechanicId], references: [id])
+  workshop       Workshop        @relation(fields: [workshopId], references: [id])
+  vehicle        Vehicle         @relation(fields: [vehicleId], references: [id])
+  mechanic       User?           @relation(fields: [mechanicId], references: [id])
   serviceItems   ServiceItem[]
   invoice        Invoice?
-  bookingRequest BookingRequest? @relation(fields: [bookingRequestId], references: [id])  // ← fields/references here
+  bookingRequest BookingRequest? @relation(fields: [bookingRequestId], references: [id])
   order          Order?
+
+  @@index([workshopId])
+  @@index([workshopId, status]) // filter by status di dashboard services
+  @@index([vehicleId])
+  @@index([mechanicId])         // filter service by mechanic
 }
 
 model ServiceItem {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   description String?
-  qty         Int     @default(1)
-  unitPrice   Decimal @db.Decimal(12, 2)
-  total       Decimal @db.Decimal(12, 2)
+  qty         Int      @default(1)
+  unitPrice   Decimal  @db.Decimal(12, 2)
+  total       Decimal  @db.Decimal(12, 2)
   serviceId   String
   createdAt   DateTime @default(now())
 
   service     Service @relation(fields: [serviceId], references: [id])
+
+  @@index([serviceId])
 }
 
 model Invoice {
   id          String        @id @default(uuid())
-  invoiceNo   String        @unique  // e.g. INV-20240101-001
+  invoiceNo   String        @unique
   subtotal    Decimal       @db.Decimal(12, 2)
   tax         Decimal       @default(0) @db.Decimal(12, 2)
   discount    Decimal       @default(0) @db.Decimal(12, 2)
@@ -271,6 +290,9 @@ model Invoice {
   workshop    Workshop  @relation(fields: [workshopId], references: [id])
   service     Service   @relation(fields: [serviceId], references: [id])
   payments    Payment[]
+
+  @@index([workshopId])
+  @@index([workshopId, status]) // filter invoice UNPAID/PAID di dashboard
 }
 
 model Payment {
@@ -286,4 +308,8 @@ model Payment {
 
   workshop      Workshop  @relation(fields: [workshopId], references: [id])
   invoice       Invoice   @relation(fields: [invoiceId], references: [id])
+
+  @@index([workshopId])
+  @@index([workshopId, paidAt]) // query laporan by date range
+  @@index([invoiceId])
 }

@@ -9,7 +9,7 @@
 
 > Platform bengkel kendaraan yang menghubungkan pelanggan dengan bengkel terpercaya — sekaligus sistem manajemen internal untuk operator bengkel.
 
-**[🚀 Live Demo](https://bengkelku.vercel.app)** · **[📖 Dokumentasi](#cara-menjalankan-lokal)** · **[🐛 Report Bug](https://github.com/username/bengkelku/issues)**
+**[🚀 Live Demo](https://multi-tenant-workshop-ruby.vercel.app/)** · **[📖 Dokumentasi](#cara-menjalankan-lokal)** · **[🐛 Report Bug](https://github.com/naufalnak/saas-workshop/issues/new?labels=bug)**
 
 ---
 
@@ -406,7 +406,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <div align="center">
   <p>Dibuat dengan 😎🤙🎧 oleh <a href="https://github.com/naufalnak">Naufal Andresya</a></p>
   <p>
-    <a href="https://saas-workshop-ruby.vercel.app/">Live Demo</a> ·
+    <a href="https://multi-tenant-workshop-ruby.vercel.app/">Live Demo</a> ·
     <a href="https://github.com/naufalnak/saas-workshop/issues/new?labels=bug">Report Bug</a> ·
     <a href="https://github.com/naufalnak/saas-workshop/issues/new?labels=enhancement">Request Feature</a>
   </p>

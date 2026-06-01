@@ -1,21 +1,14 @@
 // src/app/(dashboard)/laporan/_components/laporan-client.tsx
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import {
-  TrendingUp,
-  Wrench,
-  FileText,
-  CheckCircle2,
-  AlertCircle,
-  CreditCard,
-} from "lucide-react";
+import { TrendingUp, Wrench, CheckCircle2, AlertCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { RevenueChart } from "./revenue-chart";
 import { ServiceBreakdown } from "./service-breakdown";
 import { TransactionTable } from "./transaction-table";
-import type { LaporanData } from "../actions";
+import type { LaporanData, TransactionsData } from "../actions";
 
 const MONTHS = [
   "Januari",
@@ -34,11 +27,17 @@ const MONTHS = [
 
 interface Props {
   data: LaporanData;
+  transactions: TransactionsData; // ← pisah dari data utama
   selectedMonth: number;
   selectedYear: number;
 }
 
-export function LaporanClient({ data, selectedMonth, selectedYear }: Props) {
+export function LaporanClient({
+  data,
+  transactions,
+  selectedMonth,
+  selectedYear,
+}: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -51,7 +50,7 @@ export function LaporanClient({ data, selectedMonth, selectedYear }: Props) {
     });
   };
 
-  const { summary, chartData, payments, serviceItemBreakdown } = data;
+  const { summary, chartData, serviceItemBreakdown } = data;
 
   const summaryCards = [
     {
@@ -115,7 +114,6 @@ export function LaporanClient({ data, selectedMonth, selectedYear }: Props) {
             ))}
           </select>
         </div>
-
         {isPending && (
           <span className="text-sm text-gray-400 animate-pulse">
             Memuat data...
@@ -146,19 +144,20 @@ export function LaporanClient({ data, selectedMonth, selectedYear }: Props) {
 
       {/* Grafik + Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Revenue chart — 2/3 width */}
         <div className="lg:col-span-2">
           <RevenueChart data={chartData} />
         </div>
-
-        {/* Service breakdown — 1/3 width */}
         <div>
           <ServiceBreakdown data={serviceItemBreakdown} />
         </div>
       </div>
 
-      {/* Transaction table */}
-      <TransactionTable payments={payments} />
+      {/* Transaction table — terima initialData + month/year untuk refetch */}
+      <TransactionTable
+        initialData={transactions}
+        month={selectedMonth}
+        year={selectedYear}
+      />
     </div>
   );
 }

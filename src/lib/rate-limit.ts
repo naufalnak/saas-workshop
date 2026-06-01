@@ -1,4 +1,21 @@
-import { prisma } from "@/lib/prisma";
+// src/lib/rate-limit.ts
+import { Ratelimit } from "@upstash/ratelimit";
+import { redis } from "@/lib/redis";
+
+// Sliding window: max 5 requests per 10 menit
+const rateLimiters: Record<string, Ratelimit> = {};
+
+function getRateLimiter(max: number, windowMinutes: number): Ratelimit {
+  const key = `${max}_${windowMinutes}`;
+  if (!rateLimiters[key]) {
+    rateLimiters[key] = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(max, `${windowMinutes} m`),
+      prefix: "ratelimit",
+    });
+  }
+  return rateLimiters[key];
+}
 
 export async function checkRateLimit(
   ip: string,
@@ -6,40 +23,8 @@ export async function checkRateLimit(
   max = 5,
   windowMinutes = 10,
 ): Promise<{ success: boolean }> {
-  const now = new Date();
-
-  const record = await prisma.rateLimit.findUnique({
-    where: { ip_endpoint: { ip, endpoint } },
-  });
-
-  // Belum ada record / window sudah expired → reset
-  if (!record || record.resetAt < now) {
-    await prisma.rateLimit.upsert({
-      where: { ip_endpoint: { ip, endpoint } },
-      update: {
-        attempts: 1,
-        resetAt: new Date(now.getTime() + windowMinutes * 60 * 1000),
-      },
-      create: {
-        ip,
-        endpoint,
-        attempts: 1,
-        resetAt: new Date(now.getTime() + windowMinutes * 60 * 1000),
-      },
-    });
-    return { success: true };
-  }
-
-  // Sudah melebihi limit
-  if (record.attempts >= max) {
-    return { success: false };
-  }
-
-  // Tambah counter
-  await prisma.rateLimit.update({
-    where: { ip_endpoint: { ip, endpoint } },
-    data: { attempts: { increment: 1 } },
-  });
-
-  return { success: true };
+  const limiter = getRateLimiter(max, windowMinutes);
+  const identifier = `${endpoint}:${ip}`;
+  const { success } = await limiter.limit(identifier);
+  return { success };
 }

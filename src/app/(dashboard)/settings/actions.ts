@@ -3,7 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkshopId } from "@/lib/session";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 
 const workshopSchema = z.object({
@@ -61,6 +61,9 @@ export async function updateWorkshopProfile(formData: FormData) {
     data: { ...data, specialties },
   });
 
+  // updateTag: invalidasi cache dari Server Action (Next.js 16)
+  updateTag("workshops-public");
+
   revalidatePath("/settings");
   revalidatePath("/bengkel");
 }
@@ -79,6 +82,7 @@ export async function addWorkshopService(formData: FormData) {
     data: { ...data, workshopId },
   });
 
+  updateTag("workshops-public");
   revalidatePath("/settings");
 }
 
@@ -87,5 +91,7 @@ export async function deleteWorkshopService(id: string) {
   await prisma.workshopService.deleteMany({
     where: { id, workshopId },
   });
+
+  updateTag("workshops-public");
   revalidatePath("/settings");
 }

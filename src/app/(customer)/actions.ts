@@ -14,6 +14,7 @@ import { headers } from "next/headers";
 import {
   generateVerifyToken,
   sendCustomerVerificationEmail,
+  sendOperatorVerificationEmail,
 } from "@/lib/email";
 
 const registerSchema = z.object({
@@ -60,15 +61,12 @@ export async function registerCustomer(formData: FormData) {
     },
   });
 
-  // Kirim email verifikasi
   await sendCustomerVerificationEmail({ email, name, token });
 
-  // Redirect ke halaman "cek email"
   redirect("/check-email?type=customer");
 }
 
 export async function loginCustomer(formData: FormData) {
-  // Rate limit
   const headersList = await headers();
   const ip = headersList.get("x-forwarded-for") ?? "anonymous";
   const { success } = await checkRateLimit(ip, "login");
@@ -90,7 +88,6 @@ export async function loginCustomer(formData: FormData) {
   const valid = await bcrypt.compare(password, customer.password);
   if (!valid) return { error: "Email atau password salah" };
 
-  // Cek email sudah diverifikasi
   if (!customer.emailVerified) {
     return {
       error: "Email belum diverifikasi. Cek inbox atau spam kamu.",
@@ -124,6 +121,7 @@ export async function resendVerificationEmail(
     const customer = await prisma.globalCustomer.findUnique({
       where: { email },
     });
+
     if (!customer || customer.emailVerified)
       return { error: "Akun tidak ditemukan atau sudah terverifikasi" };
 
@@ -133,7 +131,36 @@ export async function resendVerificationEmail(
     });
 
     await sendCustomerVerificationEmail({ email, name: customer.name, token });
+
+    return { success: true };
   }
 
-  return { success: true };
+  if (type === "operator") {
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user || user.emailVerified)
+      return { error: "Akun tidak ditemukan atau sudah terverifikasi" };
+
+    // Ambil nama workshop untuk subject email
+    const workshop = await prisma.workshop.findUnique({
+      where: { id: user.workshopId },
+      select: { name: true },
+    });
+
+    await prisma.user.update({
+      where: { email },
+      data: { verifyToken: token, verifyTokenExp: exp },
+    });
+
+    await sendOperatorVerificationEmail({
+      email,
+      name: user.name,
+      workshopName: workshop?.name ?? "Bengkel",
+      token,
+    });
+
+    return { success: true };
+  }
+
+  return { error: "Tipe tidak valid" };
 }

@@ -31,7 +31,7 @@ export async function getOrders(
     orderBy: { createdAt: "desc" },
   });
 
-  return { data }; // ← wrap dalam object
+  return { data };
 }
 
 export async function confirmOrder(orderId: string) {
@@ -46,35 +46,43 @@ export async function confirmOrder(orderId: string) {
   });
   if (!order) throw new Error("Order tidak ditemukan");
 
-  // Handle customer
-  let customer = await prisma.customer.findFirst({
-    where: { workshopId },
-  });
+  // ── Resolve customer ──────────────────────────────────────
+  // Kasus 1: Order dari GlobalCustomer (daftar via portal publik)
+  // Kasus 2: Order guest/walk-in (pakai guestName & guestPhone)
+  let customer;
 
-  if (order.globalCustomerId) {
-    const gc = await prisma.globalCustomer.findUnique({
-      where: { id: order.globalCustomerId },
-    });
-
+  if (order.globalCustomerId && order.globalCustomer) {
+    // Cari customer yang sudah ada di workshop ini berdasarkan email
     customer = await prisma.customer.findFirst({
-      where: { workshopId, email: gc?.email },
+      where: { workshopId, email: order.globalCustomer.email },
     });
 
-    if (!customer && gc) {
+    // Belum ada → buat baru dari data GlobalCustomer
+    if (!customer) {
       customer = await prisma.customer.create({
         data: {
-          name: gc.name,
-          email: gc.email,
-          phone: gc.phone ?? null,
+          name: order.globalCustomer.name,
+          email: order.globalCustomer.email,
+          phone: order.globalCustomer.phone ?? null,
           workshopId,
         },
       });
     }
+  } else if (order.guestName) {
+    // Guest/walk-in — buat customer baru dari data guest di order
+    customer = await prisma.customer.create({
+      data: {
+        name: order.guestName,
+        phone: order.guestPhone ?? null,
+        workshopId,
+      },
+    });
+  } else {
+    // Tidak ada data customer sama sekali — jangan lanjut
+    throw new Error("Data customer tidak ditemukan di order ini");
   }
 
-  if (!customer) throw new Error("Customer tidak ditemukan");
-
-  // Handle vehicle
+  // ── Resolve vehicle ───────────────────────────────────────
   let vehicleId = order.vehicleId;
   if (!vehicleId) {
     const placeholder = await prisma.vehicle.create({
@@ -89,36 +97,41 @@ export async function confirmOrder(orderId: string) {
     vehicleId = placeholder.id;
   }
 
-  // Buat service order
-  const service = await prisma.service.create({
-    data: {
-      serviceNo: generateServiceNo(),
-      complaint: order.complaint,
-      notes: order.notes,
-      status: "PENDING",
-      vehicleId,
-      workshopId,
-    },
+  // ── Buat service & update order dalam transaksi ───────────
+  const service = await prisma.$transaction(async (tx) => {
+    const svc = await tx.service.create({
+      data: {
+        serviceNo: generateServiceNo(),
+        complaint: order.complaint,
+        notes: order.notes,
+        status: "PENDING",
+        vehicleId,
+        workshopId,
+      },
+    });
+
+    await tx.order.update({
+      where: { id: orderId },
+      data: { status: "CONFIRMED", serviceId: svc.id },
+    });
+
+    return svc;
   });
 
-  // Update order status
-  await prisma.order.update({
-    where: { id: orderId },
-    data: { status: "CONFIRMED", serviceId: service.id },
-  });
-
-  // ── Kirim notifikasi WA ──────────────────────────────────
+  // ── Kirim notifikasi WA ───────────────────────────────────
   const phone = await getCustomerPhone(
     order.globalCustomerId,
     customer.id,
     prisma,
   );
 
-  if (phone && order.globalCustomer) {
-    // Fire and forget — tidak perlu await
+  const customerName =
+    order.globalCustomer?.name ?? order.guestName ?? customer.name;
+
+  if (phone) {
     WA.bookingConfirmed({
       customerPhone: phone,
-      customerName: order.globalCustomer.name,
+      customerName,
       workshopName: order.workshop.name,
       orderNo: order.orderNo,
       orderType: order.type,
@@ -149,13 +162,14 @@ export async function rejectOrder(orderId: string, reason: string) {
     data: { status: "REJECTED" },
   });
 
-  // ── Kirim notifikasi WA ──────────────────────────────────
+  // ── Kirim notifikasi WA ───────────────────────────────────
   const phone = await getCustomerPhone(order.globalCustomerId, null, prisma);
+  const customerName = order.globalCustomer?.name ?? order.guestName;
 
-  if (phone && order.globalCustomer) {
+  if (phone && customerName) {
     WA.bookingRejected({
       customerPhone: phone,
-      customerName: order.globalCustomer.name,
+      customerName,
       workshopName: order.workshop.name,
       orderNo: order.orderNo,
       appUrl: APP_URL,

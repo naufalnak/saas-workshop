@@ -231,6 +231,19 @@ export async function addPayment(invoiceId: string, formData: FormData) {
 }
 
 export async function deletePayment(paymentId: string, invoiceId: string) {
+  const workshopId = await getWorkshopId();
+
+  // Verifikasi payment ini milik invoice yang ada di workshop ini
+  const payment = await prisma.payment.findFirst({
+    where: {
+      id: paymentId,
+      invoiceId,
+      workshopId,
+    },
+  });
+
+  if (!payment) throw new Error("Payment tidak ditemukan atau akses ditolak");
+
   await prisma.payment.delete({ where: { id: paymentId } });
   await recalculateInvoiceStatus(invoiceId);
   revalidatePath(`/invoices/${invoiceId}`);

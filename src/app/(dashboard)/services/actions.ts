@@ -271,6 +271,18 @@ export async function addServiceItem(serviceId: string, formData: FormData) {
 }
 
 export async function deleteServiceItem(itemId: string, serviceId: string) {
+  const workshopId = await getWorkshopId();
+
+  // Verifikasi bahwa serviceItem ini memang milik service yang ada di workshop ini
+  const item = await prisma.serviceItem.findFirst({
+    where: {
+      id: itemId,
+      service: { id: serviceId, workshopId },
+    },
+  });
+
+  if (!item) throw new Error("Item tidak ditemukan atau akses ditolak");
+
   await prisma.serviceItem.delete({ where: { id: itemId } });
   revalidatePath(`/services/${serviceId}`);
 }

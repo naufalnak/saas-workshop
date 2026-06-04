@@ -9,6 +9,7 @@ import {
   confirmOrderService,
   rejectOrderService,
 } from "@/services/order.service";
+import { withResult } from "@/lib/action-result";
 
 // ── Queries ───────────────────────────────────────────────
 
@@ -36,33 +37,42 @@ export async function getOrders(
   return { data };
 }
 
-// ── Mutations ─────────────────────────────────────────────
+// ── Mutations — semua pakai withResult ────────────────────
 
 export async function confirmOrder(orderId: string) {
   const workshopId = await getWorkshopId();
 
-  // Business logic ada di service layer — action hanya orchestrate
-  const { serviceId } = await confirmOrderService(orderId, workshopId);
+  const result = await withResult(async () => {
+    const { serviceId } = await confirmOrderService(orderId, workshopId);
+    revalidatePath("/bookings");
+    revalidatePath("/services");
+    return { serviceId };
+  });
 
-  revalidatePath("/bookings");
-  revalidatePath("/services");
-
-  return serviceId;
+  return result;
 }
 
 export async function rejectOrder(orderId: string, reason: string) {
   const workshopId = await getWorkshopId();
 
-  await rejectOrderService(orderId, workshopId, reason);
+  const result = await withResult(async () => {
+    await rejectOrderService(orderId, workshopId, reason);
+    revalidatePath("/bookings");
+  });
 
-  revalidatePath("/bookings");
+  return result;
 }
 
 export async function markOrderInProgress(orderId: string) {
   const workshopId = await getWorkshopId();
-  await prisma.order.update({
-    where: { id: orderId, workshopId },
-    data: { status: "IN_PROGRESS" },
+
+  const result = await withResult(async () => {
+    await prisma.order.update({
+      where: { id: orderId, workshopId },
+      data: { status: "IN_PROGRESS" },
+    });
+    revalidatePath("/bookings");
   });
-  revalidatePath("/bookings");
+
+  return result;
 }

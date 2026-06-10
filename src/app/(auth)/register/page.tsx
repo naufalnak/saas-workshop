@@ -106,7 +106,7 @@ export default function RegisterPage() {
           {/* Title */}
           <div className="relative z-10 mb-6">
             <h2 className="text-3xl font-extrabold text-white leading-tight tracking-tight">
-              BengkelKu
+              BengkelHub
               <br />
               Operator Portal
             </h2>
@@ -137,7 +137,7 @@ export default function RegisterPage() {
             }}>
             <p className="text-white text-sm text-center leading-relaxed">
               Setelah daftar, bengkel Anda bisa langsung menerima booking dari
-              ribuan customer di BengkelKu.
+              ribuan customer di BengkelHub.
             </p>
           </div>
         </div>

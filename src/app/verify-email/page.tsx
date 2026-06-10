@@ -88,7 +88,7 @@ export default async function VerifyEmailPage({ searchParams }: Props) {
             </h1>
             <p className="text-gray-500 mb-8">
               Akun kamu sudah aktif. Sekarang kamu bisa login dan mulai
-              menggunakan BengkelKu.
+              menggunakan BengkelHub.
             </p>
             <Link
               href={result.type === "operator" ? "/login" : "/masuk"}

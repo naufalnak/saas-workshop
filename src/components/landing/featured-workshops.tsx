@@ -32,7 +32,7 @@ export default function FeaturedWorkshops({ workshops }: Props) {
               Bengkel pilihan kami
             </h2>
             <p className="text-gray-500 mt-2">
-              Bengkel terpercaya yang sudah bergabung di platform BengkelKu
+              Bengkel terpercaya yang sudah bergabung di platform BengkelHub
             </p>
           </div>
           <Link

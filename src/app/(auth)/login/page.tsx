@@ -19,7 +19,7 @@ type FormData = z.infer<typeof schema>;
 const SLIDES = [
   {
     image: "/images/login/bengkel-1.jpg",
-    title: "BengkelKu Operator Portal",
+    title: "BengkelHub Operator Portal",
     subtitle: "Kelola bengkel, jadwal, dan servis Anda",
   },
   {

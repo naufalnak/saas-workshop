@@ -48,9 +48,9 @@ export function CheckEmailContent() {
           </p>
           {[
             "Buka inbox email kamu",
-            "Cari email dari BengkelKu",
+            "Cari email dari BengkelHub",
             'Klik tombol "Verifikasi Email"',
-            "Login dan mulai gunakan BengkelKu",
+            "Login dan mulai gunakan BengkelHub",
           ].map((step, i) => (
             <div key={i} className="flex items-center gap-3 mb-2 last:mb-0">
               <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0">

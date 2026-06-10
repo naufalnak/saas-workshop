@@ -10,11 +10,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   ),
-  title: "BengkelKu — Workshop Management",
+  title: "BengkelHub — Workshop Management",
   description:
     "Platform SaaS manajemen bengkel kendaraan — kelola order servis, invoice digital, dan pembayaran dalam satu tempat. Dilengkapi portal booking untuk pelanggan.",
   openGraph: {
-    title: "BengkelKu — Workshop Management",
+    title: "BengkelHub — Workshop Management",
     description:
       "Platform SaaS manajemen bengkel kendaraan — kelola order servis, invoice digital, dan pembayaran dalam satu tempat. Dilengkapi portal booking untuk pelanggan.",
     images: ["/img/preview.png"],

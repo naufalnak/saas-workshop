@@ -107,7 +107,7 @@ export default function DashboardPreview() {
               <div className="w-3 h-3 rounded-full bg-green-400" />
             </div>
             <div className="flex-1 bg-white rounded-md px-3 py-1 text-xs text-gray-400 mx-4">
-              app.bengkelku.com/dashboard
+              app.bengkelhub.com/dashboard
             </div>
           </div>
 
@@ -120,7 +120,7 @@ export default function DashboardPreview() {
                   <Wrench className="w-3 h-3 text-white" />
                 </div>
                 <span className="text-xs font-bold text-gray-900">
-                  BengkelKu
+                  BengkelHub
                 </span>
               </div>
               {[

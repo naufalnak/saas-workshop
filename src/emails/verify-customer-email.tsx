@@ -22,14 +22,14 @@ export function VerifyCustomerEmail({ name, verifyUrl }: Props) {
   return (
     <Html>
       <Head />
-      <Preview>Verifikasi email akun BengkelKu kamu</Preview>
+      <Preview>Verifikasi email akun BengkelHub kamu</Preview>
       <Tailwind>
         <Body className="bg-gray-50 font-sans">
           <Container className="mx-auto py-10 px-4 max-w-lg">
             {/* Header */}
             <Section className="bg-blue-600 rounded-t-2xl px-8 py-6 text-center">
               <Heading className="text-white text-2xl font-bold m-0">
-                🔧 BengkelKu
+                🔧 BengkelHub
               </Heading>
               <Text className="text-blue-100 text-sm mt-1 mb-0">
                 Temukan Bengkel Terpercaya
@@ -47,7 +47,7 @@ export function VerifyCustomerEmail({ name, verifyUrl }: Props) {
               </Text>
 
               <Text className="text-gray-600 text-sm leading-relaxed">
-                Akun BengkelKu kamu hampir siap. Verifikasi email kamu sekarang
+                Akun BengkelHub kamu hampir siap. Verifikasi email kamu sekarang
                 untuk mulai mencari bengkel dan booking servis kendaraan.
               </Text>
 
@@ -87,7 +87,7 @@ export function VerifyCustomerEmail({ name, verifyUrl }: Props) {
             </Section>
 
             <Text className="text-center text-gray-400 text-xs mt-6">
-              © {new Date().getFullYear()} BengkelKu · Platform Bengkel
+              © {new Date().getFullYear()} BengkelHub · Platform Bengkel
               Kendaraan Indonesia
             </Text>
           </Container>

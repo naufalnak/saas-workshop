@@ -14,7 +14,7 @@ export default function Footer() {
                 <Wrench className="w-5 h-5 text-white" />
               </div>
               <div>
-                <span className="font-bold text-white block">BengkelKu</span>
+                <span className="font-bold text-white block">BengkelHub</span>
                 <span className="text-xs text-blue-400">
                   Platform Bengkel Indonesia
                 </span>
@@ -31,7 +31,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2 text-xs">
                 <Mail className="w-3.5 h-3.5 text-red-400" />
-                <span>hello@bengkelku.id</span>
+                <span>hello@bengkelhub.id</span>
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="text-xs">
-            © {new Date().getFullYear()} BengkelKu. All rights reserved.
+            © {new Date().getFullYear()} BengkelHub. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -114,7 +114,7 @@ export default function Footer() {
               Semua sistem berjalan normal
             </span>
           </div>
-          <p className="text-xs">Made with ❤️ in Indonesia</p>
+          <p className="text-xs">Bangga Buatan Anak IT Lokal</p>
         </div>
       </div>
     </footer>

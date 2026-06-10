@@ -48,7 +48,7 @@ export default function Navbar({ session }: Props) {
           </div>
           <div>
             <span className="font-bold text-white text-lg leading-none block">
-              BengkelKu
+              BengkelHub
             </span>
             <span className="text-blue-300 text-xs leading-none">
               Platform Bengkel Indonesia

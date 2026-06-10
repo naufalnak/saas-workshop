@@ -39,7 +39,7 @@ export default function CTA() {
             <span className="text-red-500">Lebih Efisien</span>
           </h2>
           <p className="text-blue-300 text-lg max-w-xl mx-auto">
-            Bergabung dengan ratusan bengkel yang sudah menggunakan BengkelKu
+            Bergabung dengan ratusan bengkel yang sudah menggunakan BengkelHub
             untuk operasional sehari-hari.
           </p>
         </motion.div>

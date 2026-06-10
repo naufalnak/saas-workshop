@@ -1,4 +1,4 @@
-# BengkelKu — Platform Manajemen Bengkel Kendaraan
+# BengkelHub — Platform Manajemen Bengkel Kendaraan
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://typescriptlang.org)
@@ -27,13 +27,13 @@
 
 ## Tentang Project
 
-BengkelKu adalah platform multi-tenant yang dirancang untuk dua sisi pengguna sekaligus **operator bengkel** yang ingin mengelola servis, invoice, dan pembayaran secara digital, dan **pelanggan** yang ingin menemukan bengkel terpercaya serta memesan servis secara online.
+BengkelHub adalah platform multi-tenant yang dirancang untuk dua sisi pengguna sekaligus **operator bengkel** yang ingin mengelola servis, invoice, dan pembayaran secara digital, dan **pelanggan** yang ingin menemukan bengkel terpercaya serta memesan servis secara online.
 
 ### Problem yang diselesaikan
 
 Bengkel independen kebanyakan masih pakai cara lama: catatan di buku, nota kertas, WhatsApp bolak-balik. Akibatnya data gampang hilang, riwayat servis berantakan, dan pelanggan tidak tahu status kendaraannya sedang di mana.
 
-BengkelKu menangani itu semua dalam satu tempat — pencatatan pelanggan dan kendaraan, manajemen order servis, invoice digital, sampai portal booking untuk pelanggan.
+BengkelHub menangani itu semua dalam satu tempat — pencatatan pelanggan dan kendaraan, manajemen order servis, invoice digital, sampai portal booking untuk pelanggan.
 
 ### Dua sisi platform
 
@@ -172,8 +172,8 @@ Customer  → Custom JWT Cookie (jose)     → httpOnly cookie "gc_token"
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/username/bengkelku.git
-cd bengkelku
+git clone https://github.com/username/bengkelhub.git
+cd bengkelhub
 ```
 
 ### 2. Install dependencies
@@ -281,7 +281,7 @@ Semua akun demo menggunakan password: **`password123`**
 ## Struktur Folder
 
 ```
-bengkelku/
+bengkelhub/
 ├── prisma/
 │   ├── schema.prisma          # Database schema (10 models)
 │   ├── seed.ts                # Dummy data seeder

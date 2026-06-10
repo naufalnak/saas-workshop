@@ -41,7 +41,7 @@ export default function Sidebar() {
         </div>
         <div>
           <span className="font-bold text-white text-sm block leading-none">
-            BengkelKu
+            BengkelHub
           </span>
           <span className="text-blue-400 text-xs leading-none">Dashboard</span>
         </div>

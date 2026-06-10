@@ -192,7 +192,7 @@ export default function DaftarPage() {
           }}>
           <p className="text-xs text-slate-300 text-center leading-relaxed">
             Dengan mendaftar, kamu bisa booking servis ke bengkel manapun yang
-            terdaftar di BengkelKu.
+            terdaftar di BengkelHub.
           </p>
         </div>
 

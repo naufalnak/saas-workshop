@@ -28,14 +28,14 @@ export default function Benefits() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}>
             <span className="inline-block bg-red-100 text-red-600 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider mb-4">
-              Kenapa BengkelKu?
+              Kenapa BengkelHub?
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#0B1C3D] mb-4 leading-tight">
               Dirancang untuk{" "}
               <span className="text-red-600">bengkel nyata</span>
             </h2>
             <p className="text-gray-500 leading-relaxed mb-8">
-              Bukan sekadar software — BengkelKu dibuat berdasarkan alur kerja
+              Bukan sekadar software — BengkelHub dibuat berdasarkan alur kerja
               bengkel kendaraan yang sesungguhnya.
             </p>
 

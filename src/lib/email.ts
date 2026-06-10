@@ -32,7 +32,7 @@ export async function sendOperatorVerificationEmail({
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: `Verifikasi email bengkel ${workshopName} — BengkelKu`,
+    subject: `Verifikasi email bengkel ${workshopName} — BengkelHub`,
     html,
   });
 
@@ -58,7 +58,7 @@ export async function sendCustomerVerificationEmail({
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Verifikasi email akun BengkelKu kamu",
+    subject: "Verifikasi email akun BengkelHub kamu",
     html,
   });
 

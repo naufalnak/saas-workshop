@@ -97,7 +97,7 @@ Silakan datang ke bengkel sesuai jadwal yang telah disepakati.
 Pantau status servis kamu di:
 ${appUrl}/akun/orders
 
-_BengkelKu — Platform Bengkel Kendaraan_`;
+_BengkelHub — Platform Bengkel Kendaraan_`;
 
     return sendWhatsApp(customerPhone, message);
   },
@@ -128,7 +128,7 @@ Kamu bisa membuat order baru atau menghubungi bengkel langsung untuk informasi l
 Lihat detail di:
 ${appUrl}/akun/orders
 
-_BengkelKu — Platform Bengkel Kendaraan_`;
+_BengkelHub — Platform Bengkel Kendaraan_`;
 
     return sendWhatsApp(customerPhone, message);
   },
@@ -174,7 +174,7 @@ Silakan datang ke bengkel untuk mengambil kendaraan.
 Lihat detail servis di:
 ${appUrl}/akun
 
-_BengkelKu — Platform Bengkel Kendaraan_`;
+_BengkelHub — Platform Bengkel Kendaraan_`;
 
     return sendWhatsApp(customerPhone, message);
   },
@@ -214,7 +214,7 @@ ${dueDateInfo}
 Lihat & simpan invoice kamu di:
 ${appUrl}/akun
 
-_BengkelKu — Platform Bengkel Kendaraan_`;
+_BengkelHub — Platform Bengkel Kendaraan_`;
 
     return sendWhatsApp(customerPhone, message);
   },

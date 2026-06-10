@@ -23,14 +23,14 @@ export function VerifyOperatorEmail({ name, workshopName, verifyUrl }: Props) {
   return (
     <Html>
       <Head />
-      <Preview>Verifikasi email akun BengkelKu untuk {workshopName}</Preview>
+      <Preview>Verifikasi email akun BengkelHub untuk {workshopName}</Preview>
       <Tailwind>
         <Body className="bg-gray-50 font-sans">
           <Container className="mx-auto py-10 px-4 max-w-lg">
             {/* Header */}
             <Section className="bg-blue-600 rounded-t-2xl px-8 py-6 text-center">
               <Heading className="text-white text-2xl font-bold m-0">
-                🔧 BengkelKu
+                🔧 BengkelHub
               </Heading>
               <Text className="text-blue-100 text-sm mt-1 mb-0">
                 Platform Manajemen Bengkel
@@ -49,7 +49,7 @@ export function VerifyOperatorEmail({ name, workshopName, verifyUrl }: Props) {
 
               <Text className="text-gray-600 text-sm leading-relaxed">
                 Terima kasih sudah mendaftarkan <strong>{workshopName}</strong>{" "}
-                di BengkelKu. Klik tombol di bawah untuk memverifikasi email
+                di BengkelHub. Klik tombol di bawah untuk memverifikasi email
                 kamu dan mulai menggunakan platform.
               </Text>
 
@@ -63,7 +63,7 @@ export function VerifyOperatorEmail({ name, workshopName, verifyUrl }: Props) {
 
               <Text className="text-gray-500 text-xs leading-relaxed">
                 Link verifikasi ini berlaku selama <strong>24 jam</strong>. Jika
-                kamu tidak mendaftar di BengkelKu, abaikan email ini.
+                kamu tidak mendaftar di BengkelHub, abaikan email ini.
               </Text>
 
               <Hr className="border-gray-200 my-6" />
@@ -78,7 +78,7 @@ export function VerifyOperatorEmail({ name, workshopName, verifyUrl }: Props) {
 
             {/* Footer */}
             <Text className="text-center text-gray-400 text-xs mt-6">
-              © {new Date().getFullYear()} BengkelKu · Platform Bengkel
+              © {new Date().getFullYear()} BengkelHub · Platform Bengkel
               Kendaraan Indonesia
             </Text>
           </Container>

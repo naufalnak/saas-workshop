@@ -34,11 +34,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const workshop = await getWorkshopBySlugPublic(slug);
 
   if (!workshop) {
-    return { title: "Bengkel tidak ditemukan — BengkelKu" };
+    return { title: "Bengkel tidak ditemukan — BengkelHub" };
   }
 
   return {
-    title: `${workshop.name} — BengkelKu`,
+    title: `${workshop.name} — BengkelHub`,
     description:
       workshop.description ??
       `Servis kendaraan di ${workshop.name}${workshop.city ? `, ${workshop.city}` : ""}. Booking online mudah dan cepat.`,
